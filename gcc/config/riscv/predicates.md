@@ -212,3 +212,30 @@
 {
   return riscv_gpr_save_operation_p (op);
 })
+
+(define_predicate "one_bit_operand"
+  (match_code "const_int")
+{
+  int val = INTVAL (op);
+  if (val == 0 || val == 1)
+    return true;
+  return false;
+})
+
+(define_predicate "label_or_sleu_operand"
+  (ior (match_code "code_label")
+       (match_operand 0 "sleu_operand")))
+
+(define_predicate "five_bit_sleu_operand"
+  (match_code "const_int") /* TODO: MAKE SURE LESS THAN 5 BITS */
+{
+  int val = INTVAL (op);
+  if (val <= 0x1f)
+    return true;
+  return false;
+})
+
+(define_predicate "five_bit_sleu_or_label_operand"
+  (ior (match_code "code_label")
+       (match_operand 0 "five_bit_sleu_operand")))
+
