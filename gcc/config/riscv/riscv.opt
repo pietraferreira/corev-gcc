@@ -87,6 +87,10 @@ msave-restore
 Target Report Mask(SAVE_RESTORE)
 Use smaller but slower prologue and epilogue code.
 
+mcorev-loops
+Target Report Mask(COREV_LOOPS)
+Use CORE-V HWLPs insn.
+
 mshorten-memrefs
 Target Bool Var(riscv_mshorten_memrefs) Init(1)
 Convert BASE + LARGE_OFFSET addresses to NEW_BASE + SMALL_OFFSET to allow more
