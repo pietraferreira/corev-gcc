@@ -3229,6 +3229,12 @@ riscv_block_move_loop (rtx dest, rtx src, HOST_WIDE_INT length,
 bool
 riscv_expand_block_move (rtx dest, rtx src, rtx length)
 {
+  if (TARGET_COREV_LOOPS)
+    {
+      rtx ob0 = GEN_INT (24);
+      emit_insn (gen_cv_starti(ob0));
+    }
+
   if (CONST_INT_P (length))
     {
       HOST_WIDE_INT factor, align;

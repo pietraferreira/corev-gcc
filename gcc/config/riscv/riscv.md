@@ -69,6 +69,9 @@
   ;; Stack Smash Protector
   UNSPEC_SSP_SET
   UNSPEC_SSP_TEST
+
+  ;; CORE-V HWLP
+  UNSPECV_CV_STARTI
 ])
 
 (define_constants
@@ -2602,6 +2605,38 @@
   ""
   "<load>\t%3, %1\;<load>\t%0, %2\;xor\t%0, %3, %0\;li\t%3, 0"
   [(set_attr "length" "12")])
+
+
+;;
+;;  ....................
+;;
+;;      CORE-V HWLP INSN
+;;
+;;  ....................
+;; gcc -enable-corev-loop
+
+;(define_insn "cv_starti"
+;  [(set(pc)
+;       (us_plus (pc)
+;                (ashift:SI (match_operand 1 "" "")
+;                        (const_int 1))))
+;   (unspec_volatile:SI [(match_operand:SI 0 "12bit_immediate_operand" "i")
+;             (label_ref (match_operand:SI 1 "" ""))
+;            ] UNSPECV_CV_STARTI)]
+;  "" ;TODO: Add this condition: TARGET_COREV_LOOPS
+;  "cv.starti %0,%1") ;imm, symbol
+
+;(define_insn "cv_starti"
+;[(return)
+;   (unspec_volatile [(const_int 0)] UNSPECV_CV_STARTI)]
+;  ""
+;  "cv.starti")
+
+(define_insn "cv_starti"
+  [(unspec_volatile [(match_operand 0 "const_int_operand")] UNSPECV_CV_STARTI)]
+  ""
+  "cv.starti %0")
+
 
 (include "sync.md")
 (include "peephole.md")
