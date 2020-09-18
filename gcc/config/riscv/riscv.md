@@ -72,6 +72,11 @@
 
   ;; CORE-V HWLP
   UNSPECV_CV_STARTI
+  UNSPECV_CV_ENDI
+  UNSPECV_CV_COUNT
+  UNSPECV_CV_COUNTI
+  UNSPECV_CV_SETUP
+  UNSPECV_CV_SETUPI
 ])
 
 (define_constants
@@ -2615,27 +2620,46 @@
 ;;  ....................
 ;; gcc -enable-corev-loop
 
-;(define_insn "cv_starti"
-;  [(set(pc)
-;       (us_plus (pc)
-;                (ashift:SI (match_operand 1 "" "")
-;                        (const_int 1))))
-;   (unspec_volatile:SI [(match_operand:SI 0 "12bit_immediate_operand" "i")
-;             (label_ref (match_operand:SI 1 "" ""))
-;            ] UNSPECV_CV_STARTI)]
-;  "" ;TODO: Add this condition: TARGET_COREV_LOOPS
-;  "cv.starti %0,%1") ;imm, symbol
-
-;(define_insn "cv_starti"
-;[(return)
-;   (unspec_volatile [(const_int 0)] UNSPECV_CV_STARTI)]
-;  ""
-;  "cv.starti")
-
 (define_insn "cv_starti"
-  [(unspec_volatile [(match_operand 0 "const_int_operand")] UNSPECV_CV_STARTI)]
+  [(unspec_volatile [(match_operand 0 "const_int_operand") ;;TODO: THESE MUST ONLY BE 1 BIT
+                     (match_operand 1)] UNSPECV_CV_STARTI)];;TODO CAN IT BE LABEL OR NUMBER??
   ""
-  "cv.starti %0")
+  "cv.starti %0 %1")
+
+(define_insn "cv_endi"
+  [(unspec_volatile [(match_operand 0 "const_int_operand")
+                     (match_operand 1)] UNSPECV_CV_ENDI)]
+  ""
+  "cv.endi %0 %1")
+
+(define_insn "cv_count"
+  [(unspec_volatile [(match_operand 0 "const_int_operand")
+                     (match_operand 1 "register_operand" "r")] UNSPECV_CV_COUNT)] ;; TODO: READ?
+  ""
+  "cv.count %0 %1")
+
+(define_insn "cv_counti"
+  [(unspec_volatile [(match_operand 0 "const_int_operand")
+                     (match_operand 1 "const_int_operand")] UNSPECV_CV_COUNTI)] ;;TODO: Is this a constant integer? rather than label
+  ""
+  "cv.counti %0 %1")
+
+(define_insn "cv_setup"
+  [(unspec_volatile [(match_operand 0 "const_int_operand")
+                     (match_operand 1 "register_operand" "r");; TODO READ ONLY?
+		     (match_operand 2 )] UNSPECV_CV_SETUP)]
+  ""
+  "cv.setup %0 %1 %2")
+
+(define_insn "cv_setupi"
+  [(unspec_volatile [(match_operand 0 "const_int_operand")
+                     (match_operand 1 "const_int_operand") ;;TODO: uimmL is an int constant??
+                     (match_operand 2 )] UNSPECV_CV_SETUP)];;TODO: uimmS is a label??
+  ""
+  "cv.setupi %0 %1 %2")
+
+
+
 
 
 (include "sync.md")
