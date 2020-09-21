@@ -212,3 +212,17 @@
 {
   return riscv_gpr_save_operation_p (op);
 })
+
+(define_predicate "one_bit_operand"
+  (match_code "const_int")
+{
+  int val = INTVAL (op);
+  if (val == 0 || val == 1)
+    return true;
+  return false;
+})
+
+(define_predicate "sym_or_sleu_operand"
+  (ior (match_code "label_ref")
+       (match_operand 0 "sleu_operand")))
+

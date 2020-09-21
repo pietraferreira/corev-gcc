@@ -3233,18 +3233,46 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
    */
   if (TARGET_COREV_LOOPS)
     {
+      HOST_WIDE_INT offset, delta;
+      unsigned HOST_WIDE_INT bits;
+      int i;
+      enum machine_mode mode;
+
+      bits = MAX (BITS_PER_UNIT,
+              MIN (BITS_PER_WORD, MIN (MEM_ALIGN (src), MEM_ALIGN (dest))));
+
+      mode = mode_for_size (bits, MODE_INT, 0).require ();
+      delta = bits / BITS_PER_UNIT; 
+
+
+
       rtx hwloop_ln = GEN_INT (0);
       rtx hwloop_label = gen_label_rtx ();
-      rtx hwloop_reg = gen_reg_rtx(SImode);
+      //emit_label(hwloop_label);
+      rtx hwloop_reg0 = gen_reg_rtx(mode);
+      rtx hwloop_reg1 = gen_reg_rtx(mode);
       rtx hwloop_count = GEN_INT (10);
-
+      
+      //We need to use these to 1. adust the mode to one accepted by emit function
+      //emit-rtl.c:2350 adjust_address_1 defintintion
+      rtx dest_adjusted = adjust_address (dest, mode, offset);
+      rtx src_adjusted = adjust_address (src, mode, offset);
       //emit_label (label);
-      emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
+      /*emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
       emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
-      emit_insn (gen_cv_count(hwloop_ln, hwloop_reg));
+      emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
       emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
-      emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg, hwloop_label));
-      emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label)); 
+      emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
+      emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));*/ 
+      
+      //TODO: Check this length is number of ints but each int is 4 bytes maybe
+      //      do length * size of int or something??
+      emit_insn (gen_cv_setupi(hwloop_ln, length, hwloop_label));
+      emit_insn (gen_cv_option_before ());
+      riscv_emit_move (hwloop_reg0, src_adjusted);
+      riscv_emit_move (dest_adjusted, hwloop_reg0);
+      emit_label(hwloop_label);
+      emit_insn (gen_cv_option_after ());
       return true;
     }
 /* TODO:REMOVE TWO COMMENT OUTS
