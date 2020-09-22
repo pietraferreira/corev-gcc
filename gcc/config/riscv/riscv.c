@@ -3243,28 +3243,24 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
 
       mode = mode_for_size (bits, MODE_INT, 0).require ();
       delta = bits / BITS_PER_UNIT; 
-
+      
+      offset = INTVAL (GEN_INT(0));
 
 
       rtx hwloop_ln = GEN_INT (0);
       rtx hwloop_label = gen_label_rtx ();
       //emit_label(hwloop_label);
       rtx hwloop_reg0 = gen_reg_rtx(mode);
-      rtx hwloop_reg1 = gen_reg_rtx(mode);
+      rtx hwloop_reg1 = gen_reg_rtx(SImode);
       rtx hwloop_count = GEN_INT (10);
+     
       
       //We need to use these to 1. adust the mode to one accepted by emit function
       //emit-rtl.c:2350 adjust_address_1 defintintion
       rtx dest_adjusted = adjust_address (dest, mode, offset);
       rtx src_adjusted = adjust_address (src, mode, offset);
-      //emit_label (label);
-      /*emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
-      emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
-      emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
-      emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
-      emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
-      emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));*/ 
-      
+      rtx src_addr = XEXP(src_adjusted,0);
+      riscv_emit_move (hwloop_reg1, dest_adjusted);
       //TODO: Check this length is number of ints but each int is 4 bytes maybe
       //      do length * size of int or something??
       emit_insn (gen_cv_setupi(hwloop_ln, length, hwloop_label));
@@ -3273,6 +3269,20 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       riscv_emit_move (dest_adjusted, hwloop_reg0);
       emit_label(hwloop_label);
       emit_insn (gen_cv_option_after ());
+	
+      emit_insn(gen_rtx_SET (hwloop_reg1, gen_rtx_PLUS (mode, hwloop_reg1, GEN_INT(1))));
+     // emit_insn(gen_rtx_PLUS(mode, hwloop_reg0, GEN_INT (1)));
+    //dest_adjusted = gen_rtx_PLUS (Pmode, dest_adjusted,GEN_INT (1));
+      //emit_insn(gen_addsi3(src_adjusted,src_adjusted, GEN_INT(1)));
+     
+     //emit_label (label);
+      /*emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
+      emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
+      emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
+      emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
+      emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
+      emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));*/
+ 
       return true;
     }
 /* TODO:REMOVE TWO COMMENT OUTS

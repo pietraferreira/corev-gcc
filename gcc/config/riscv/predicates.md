@@ -223,6 +223,6 @@
 })
 
 (define_predicate "sym_or_sleu_operand"
-  (ior (match_code "label_ref")
+  (ior (match_operand 0 "symbolic_operand")
        (match_operand 0 "sleu_operand")))
 

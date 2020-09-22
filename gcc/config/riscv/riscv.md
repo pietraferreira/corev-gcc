@@ -2657,7 +2657,7 @@
 (define_insn "cv_setupi"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
                      (match_operand 1 "sleu_operand")  
-                     (match_operand 2 )] UNSPECV_CV_SETUP)];;TODO: uimmS is a label?? NEED TO CREATE A 5 BIT SLEU***
+                     (match_operand 2 )] UNSPECV_CV_SETUPI)];;TODO: uimmS is a label?? NEED TO CREATE A 5 BIT SLEU***
   ""
   "cv.setupi %0 %1 %2")
 
