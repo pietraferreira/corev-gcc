@@ -2623,16 +2623,17 @@
 ;;  ....................
 ;; gcc -enable-corev-loop
 
+;;TODO: choose this or the other one
+
 (define_insn "cv_starti"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand") ;;TODO: THESE MUST ONLY BE 1 BIT
-                     (match_operand 1 )] UNSPECV_CV_STARTI)];;TODO: can be label or integer, so create new predicate and copy from symbol and integer, maybe also add the constraint for max 12 bits
-								;;symb or sleu not working as symbolic_operand is incorrect *PUT SYM_OR_SLEU HERE*
+  [(set (pc) (label_ref (match_operand 1)))
+   (match_operand 0 "one_bit_operand" )]
   ""
   "cv.starti %0 %1")
 
 (define_insn "cv_endi"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (match_operand 1 )] UNSPECV_CV_ENDI)];;*PUT SYM_OR_SLEU HERE*
+                     (match_operand 1 "label_or_sleu_operand")] UNSPECV_CV_ENDI)];;*PUT SYM_OR_SLEU HERE*
   ""
   "cv.endi %0 %1")
 
@@ -2651,7 +2652,7 @@
 (define_insn "cv_setup"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
                      (match_operand 1 "register_operand" "r");; TODO READ ONLY?
-		     (match_operand 2 )] UNSPECV_CV_SETUP)];;*PUT SYM_OR_SLEU HERE*
+		     (match_operand 2 "label_or_sleu_operand")] UNSPECV_CV_SETUP)];;*PUT SYM_OR_SLEU HERE*
   ""
   "cv.setup %0 %1 %2")
 

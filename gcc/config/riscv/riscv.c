@@ -3233,7 +3233,7 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
    */
   if (TARGET_COREV_LOOPS)
     {
-      HOST_WIDE_INT offset, delta;
+      /*HOST_WIDE_INT offset, delta;
       unsigned HOST_WIDE_INT bits;
       int i;
       enum machine_mode mode;
@@ -3275,7 +3275,7 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
     //dest_adjusted = gen_rtx_PLUS (Pmode, dest_adjusted,GEN_INT (1));
       //emit_insn(gen_addsi3(src_adjusted,src_adjusted, GEN_INT(1)));
      
-     //emit_label (label);
+     //emit_label (label); */
       /*emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
       emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
       emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
@@ -3283,7 +3283,23 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
       emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));*/
  
-      emit_insn (gen_option_pop ());
+      //emit_insn (gen_option_pop ());
+
+      rtx hwloop_ln = GEN_INT (0);
+      rtx hwloop_label = gen_label_rtx ();
+      //emit_label(hwloop_label);
+      rtx hwloop_reg0 = gen_reg_rtx(SImode);
+      rtx hwloop_reg1 = gen_reg_rtx(SImode);
+      rtx hwloop_count = GEN_INT (10);
+	
+      emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
+      emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
+      emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
+      emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
+      emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
+      emit_label(hwloop_label);
+      emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_count));
+	
 
       return true;
     }

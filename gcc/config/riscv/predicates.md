@@ -222,8 +222,8 @@
   return false;
 })
 
-(define_predicate "sym_or_sleu_operand"
-  (ior (match_operand 0 "symbolic_operand")
+(define_predicate "label_or_sleu_operand"
+  (ior (match_code "code_label")
        (match_operand 0 "sleu_operand")))
 
 (define_predicate "five_bit_sleu_operand"
