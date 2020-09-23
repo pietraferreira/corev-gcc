@@ -3264,11 +3264,11 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       //TODO: Check this length is number of ints but each int is 4 bytes maybe
       //      do length * size of int or something??
       emit_insn (gen_cv_setupi(hwloop_ln, length, hwloop_label));
-      emit_insn (gen_cv_option_before ());
+      emit_insn (gen_option_push ());
+      emit_insn (gen_option_norvc ());
       riscv_emit_move (hwloop_reg0, src_adjusted);
       riscv_emit_move (dest_adjusted, hwloop_reg0);
       emit_label(hwloop_label);
-      emit_insn (gen_cv_option_after ());
 	
       emit_insn(gen_rtx_SET (hwloop_reg1, gen_rtx_PLUS (mode, hwloop_reg1, GEN_INT(1))));
      // emit_insn(gen_rtx_PLUS(mode, hwloop_reg0, GEN_INT (1)));
@@ -3283,6 +3283,8 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
       emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));*/
  
+      emit_insn (gen_option_pop ());
+
       return true;
     }
 /* TODO:REMOVE TWO COMMENT OUTS

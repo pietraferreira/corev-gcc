@@ -77,8 +77,9 @@
   UNSPECV_CV_COUNTI
   UNSPECV_CV_SETUP
   UNSPECV_CV_SETUPI
-  UNSPECV_CV_OPT_BEFORE
-  UNSPECV_CV_OPT_AFTER
+  UNSPECV_OPT_PUSH
+  UNSPECV_OPT_NORVC
+  UNSPECV_OPT_POP
 ])
 
 (define_constants
@@ -2657,19 +2658,23 @@
 (define_insn "cv_setupi"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
                      (match_operand 1 "sleu_operand")  
-                     (match_operand 2 )] UNSPECV_CV_SETUPI)];;TODO: uimmS is a label?? NEED TO CREATE A 5 BIT SLEU***
+                     (match_operand 2 "five_bit_sleu_operand")] UNSPECV_CV_SETUP)];;TODO: uimmS is a label?? NEED TO CREATE A 5 BIT SLEU***
   ""
   "cv.setupi %0 %1 %2")
 
-(define_insn "cv_option_before"
-  [(return)
-   (unspec_volatile [(const_int 0)] UNSPECV_CV_OPT_BEFORE)]
+(define_insn "option_push"
+  [(unspec_volatile [(const_int 0)] UNSPECV_OPT_PUSH)]
   ""
-  ".option push\n\t.option norvc")
+  ".option push")
 
-(define_insn "cv_option_after"
-  [(return)
-   (unspec_volatile [(const_int 0)] UNSPECV_CV_OPT_AFTER)]
+(define_insn "option_norvc"
+  [(unspec_volatile [(const_int 0)] UNSPECV_OPT_NORVC)]
+  ""
+  ".option norvc")
+
+
+(define_insn "option_pop"
+  [(unspec_volatile [(const_int 0)] UNSPECV_OPT_POP)]
   ""
   ".option pop")
 

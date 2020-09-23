@@ -226,3 +226,13 @@
   (ior (match_operand 0 "symbolic_operand")
        (match_operand 0 "sleu_operand")))
 
+(define_predicate "five_bit_sleu_operand"
+  (match_code "const_int") /* TODO: Can also be a label? */
+{
+  int val = INTVAL (op);
+  if (val <= 0x1f)
+    return true;
+  return false;
+})
+
+
