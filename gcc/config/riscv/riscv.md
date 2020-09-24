@@ -2623,44 +2623,45 @@
 ;;  ....................
 ;; gcc -enable-corev-loop
 
+;;TODO: choose this or the other one
+
 (define_insn "cv_starti"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand") ;;TODO: THESE MUST ONLY BE 1 BIT
-                     (match_operand 1 )] UNSPECV_CV_STARTI)];;TODO: can be label or integer, so create new predicate and copy from symbol and integer, maybe also add the constraint for max 12 bits
-								;;symb or sleu not working as symbolic_operand is incorrect *PUT SYM_OR_SLEU HERE*
+  [(unspec_volatile [(match_operand 0 "one_bit_operand")
+                     (use (match_operand 1 "label_or_sleu_operand"))] UNSPECV_CV_STARTI)];;*PUT SYM_OR_SLEU HERE*
   ""
-  "cv.starti %0 %1")
+  "cv.starti %0, %1")
 
 (define_insn "cv_endi"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (match_operand 1 )] UNSPECV_CV_ENDI)];;*PUT SYM_OR_SLEU HERE*
+                     (match_operand 1 "label_or_sleu_operand")] UNSPECV_CV_ENDI)];;*PUT SYM_OR_SLEU HERE*
   ""
-  "cv.endi %0 %1")
+  "cv.endi %0, %1")
 
 (define_insn "cv_count"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
                      (match_operand 1 "register_operand" "r")] UNSPECV_CV_COUNT)] ;; TODO: READ? Note: the r contraints to general purpose register, couldnt use a floating point one
   ""
-  "cv.count %0 %1")
+  "cv.count %0, %1")
 
 (define_insn "cv_counti"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
                      (match_operand 1 "const_int_operand")] UNSPECV_CV_COUNTI)] ;;TODO: Same as above
   ""
-  "cv.counti %0 %1")
+  "cv.counti %0, %1")
 
 (define_insn "cv_setup"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
                      (match_operand 1 "register_operand" "r");; TODO READ ONLY?
-		     (match_operand 2 )] UNSPECV_CV_SETUP)];;*PUT SYM_OR_SLEU HERE*
+		     (match_operand 2 "label_or_sleu_operand")] UNSPECV_CV_SETUP)];;*PUT SYM_OR_SLEU HERE*
   ""
-  "cv.setup %0 %1 %2")
+  "cv.setup %0, %1, %2")
 
 (define_insn "cv_setupi"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
                      (match_operand 1 "sleu_operand")  
-                     (match_operand 2 "five_bit_sleu_operand")] UNSPECV_CV_SETUP)];;TODO: uimmS is a label?? NEED TO CREATE A 5 BIT SLEU***
+                     (match_operand 2 "five_bit_sleu_operand")] UNSPECV_CV_SETUPI)];;TODO: uimmS is a label?? NEED TO CREATE A 5 BIT SLEU***
   ""
-  "cv.setupi %0 %1 %2")
+  "cv.setupi %0, %1, %2")
 
 (define_insn "option_push"
   [(unspec_volatile [(const_int 0)] UNSPECV_OPT_PUSH)]
