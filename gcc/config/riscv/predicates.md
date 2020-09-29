@@ -227,6 +227,15 @@
        (match_operand 0 "sleu_operand")))
 
 (define_predicate "five_bit_sleu_operand"
-  (match_code "const_int,code_label")) /* TODO: MAKE SURE LESS THAN 5 BITS */
+  (match_code "const_int") /* TODO: MAKE SURE LESS THAN 5 BITS */
+{
+  int val = INTVAL (op);
+  if (val <= 0x1f)
+    return true;
+  return false;
+})
 
+(define_predicate "five_bit_sleu_or_label_operand"
+  (ior (match_code "code_label")
+       (match_operand 0 "five_bit_sleu_operand")))
 
