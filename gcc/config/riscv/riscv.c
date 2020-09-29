@@ -3248,6 +3248,7 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
 
       // Create operands for insns
       rtx hwloop_ln = GEN_INT (0);
+      //TODO: remove all volatiles
       volatile rtx hwloop_label = gen_label_rtx ();
       volatile rtx hwloop_reg0 = gen_reg_rtx(mode);
       volatile rtx hwloop_reg1 = gen_reg_rtx(mode);
@@ -3271,13 +3272,15 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       //TODO: Put addi here
       emit_label(hwloop_label);
       //riscv_emit_move (gen_rtx_REG (mode, RETURN_ADDR_REGNUM), hwloop_reg1);
-      rtx dest_reg;
+      rtx src_reg, dest_reg;
       riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
+      riscv_adjust_block_mem (src, INTVAL (GEN_INT(4)), &src_reg, &src);
       //emit_insn(gen_rtx_SET (dest_reg, gen_rtx_PLUS (SImode, dest_reg, GEN_INT(1)))); //addi    t1,t1,1
       riscv_emit_move (dest_reg, plus_constant (SImode, dest_reg, INTVAL(GEN_INT(1))));
+      riscv_emit_move (src_reg, plus_constant (SImode, src_reg, INTVAL(GEN_INT(1))));
+      
+      //riscv_emit_move (adjust_address (dest, SImode, offset), src_reg); USE 2 STOP OPTIMISATION OUS
 
-
-      //emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
       //emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
       //emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
       //emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
