@@ -3208,8 +3208,8 @@ riscv_block_move_loop (rtx dest, rtx src, HOST_WIDE_INT length,
   /* Move on to the next block.  */
   riscv_emit_move (src_reg, plus_constant (Pmode, src_reg, bytes_per_iter));
   riscv_emit_move (dest_reg, plus_constant (Pmode, dest_reg, bytes_per_iter));
-
-  /* Emit the loop condition.  */
+  
+  //Emit the loop condition.  
   test = gen_rtx_NE (VOIDmode, src_reg, final_src);
   if (Pmode == DImode)
     emit_jump_insn (gen_cbranchdi4 (test, src_reg, final_src, label));
@@ -3246,12 +3246,12 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       
       offset = INTVAL (GEN_INT(0));
 
-      /* Create operands for insns */
+      // Create operands for insns
       rtx hwloop_ln = GEN_INT (0);
-      rtx hwloop_label = gen_label_rtx ();
-      rtx hwloop_reg0 = gen_reg_rtx(mode);
-      rtx hwloop_reg1 = gen_reg_rtx(mode);
-      rtx hwloop_count = GEN_INT (10);
+      volatile rtx hwloop_label = gen_label_rtx ();
+      volatile rtx hwloop_reg0 = gen_reg_rtx(mode);
+      volatile rtx hwloop_reg1 = gen_reg_rtx(mode);
+      volatile rtx hwloop_count = GEN_INT (10);
      
       
       //We need to use these to 1. adust the mode to one accepted by emit function
@@ -3263,27 +3263,45 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       //TODO: Check this length is number of ints but each int is 4 bytes maybe
       //      do length * size of int or something??
       emit_insn (gen_cv_setupi(hwloop_ln, length, hwloop_label)); // cv.setupi    0,a2,.L1
+      //emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
       emit_insn (gen_option_push ()); //.option    push
       emit_insn (gen_option_norvc ()); //.option    norvc
       riscv_emit_move (hwloop_reg0, src_adjusted); //lb    t0,0(a1)
       riscv_emit_move (dest_adjusted, hwloop_reg0); // sb      t0,0(t1)
       //TODO: Put addi here
       emit_label(hwloop_label);
-      //emit_insn(gen_rtx_SET (hwloop_reg1, gen_rtx_PLUS (mode, hwloop_reg1, GEN_INT(1)))); //addi    t1,t1,1
-      
-      // emit_insn(gen_rtx_PLUS(mode, hwloop_reg0, GEN_INT (1)));
-      //dest_adjusted = gen_rtx_PLUS (Pmode, dest_adjusted,GEN_INT (1));
-      //emit_insn(gen_addsi3(src_adjusted,src_adjusted, GEN_INT(1)));
-     
-      emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
-      emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
-      emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
-      emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
-      emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
-      emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));
- 
-      emit_insn (gen_option_pop ());
+      //riscv_emit_move (gen_rtx_REG (mode, RETURN_ADDR_REGNUM), hwloop_reg1);
+      rtx dest_reg;
+      riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
+      //emit_insn(gen_rtx_SET (dest_reg, gen_rtx_PLUS (SImode, dest_reg, GEN_INT(1)))); //addi    t1,t1,1
+      riscv_emit_move (dest_reg, plus_constant (SImode, dest_reg, INTVAL(GEN_INT(1))));
 
+
+      //emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
+      //emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
+      //emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
+      //emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
+      //emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
+      //emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));
+      //emit_label(hwloop_label);
+      emit_insn (gen_option_pop ());
+/*
+          unsigned min_iter_words
+            = RISCV_MAX_MOVE_BYTES_PER_LOOP_ITER / UNITS_PER_WORD;
+          unsigned iter_words = min_iter_words;
+          HOST_WIDE_INT bytes = INTVAL (length), words = bytes / UNITS_PER_WORD;
+
+          //Lengthen the loop body if it shortens the tail. 
+        for (unsigned i = min_iter_words; i < min_iter_words * 2 - 1; i++)
+            {
+              unsigned cur_cost = iter_words + words % iter_words;
+              unsigned new_cost = i + words % i;
+              if (new_cost <= cur_cost)
+                iter_words = i;
+            }
+
+          riscv_block_move_loop (dest, src, bytes, iter_words * UNITS_PER_WORD);
+*/
       return true;
     }
 /* TODO:REMOVE TWO COMMENT OUTS

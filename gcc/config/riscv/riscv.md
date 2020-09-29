@@ -2627,7 +2627,8 @@
 
 (define_insn "cv_starti"
   [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (use (match_operand 1 "label_or_sleu_operand"))] UNSPECV_CV_STARTI)];;*PUT SYM_OR_SLEU HERE*
+                     (label_ref (match_operand 1 "label_or_sleu_operand"))] UNSPECV_CV_STARTI)
+   (use (label_ref (match_dup 1)))]
   ""
   "cv.starti %0, %1")
 
