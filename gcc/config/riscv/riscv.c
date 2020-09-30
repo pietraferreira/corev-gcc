@@ -3233,16 +3233,15 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
    */
   if (TARGET_COREV_LOOPS)
     {
-      HOST_WIDE_INT offset, delta;
+      HOST_WIDE_INT offset;
       unsigned HOST_WIDE_INT bits;
-      int i;
       enum machine_mode mode;
 
       bits = MAX (BITS_PER_UNIT,
               MIN (BITS_PER_WORD, MIN (MEM_ALIGN (src), MEM_ALIGN (dest))));
 
       mode = mode_for_size (bits, MODE_INT, 0).require ();
-      delta = bits / BITS_PER_UNIT; 
+      //delta = bits / BITS_PER_UNIT; 
       
       offset = INTVAL (GEN_INT(0));
 
@@ -3252,33 +3251,50 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       volatile rtx hwloop_label = gen_label_rtx ();
       volatile rtx hwloop_reg0 = gen_reg_rtx(mode);
       volatile rtx hwloop_reg1 = gen_reg_rtx(mode);
-      volatile rtx hwloop_count = GEN_INT (10);
-     
-      
+ 
+      rtx count = gen_reg_rtx(SImode);
+      riscv_emit_move (count, GEN_INT(0));
+
+      rtx src_reg, dest_reg;
+      riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
+      riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
+
       //We need to use these to 1. adust the mode to one accepted by emit function
       //emit-rtl.c:2350 adjust_address_1 defintintion
       rtx dest_adjusted = adjust_address (dest, mode, offset);
       rtx src_adjusted = adjust_address (src, mode, offset);
       riscv_emit_move (hwloop_reg1, dest_adjusted); //mv    t1, a0
-      
+
+      //riscv_adjust_block_mem (dest_adjusted, INTVAL (GEN_INT(4)), &dest_reg, &dest_adjusted);
+      //riscv_adjust_block_mem (src_adjusted,  INTVAL (GEN_INT(4)), &src_reg,  &src_adjusted);
+
       //TODO: Check this length is number of ints but each int is 4 bytes maybe
       //      do length * size of int or something??
       emit_insn (gen_cv_setupi(hwloop_ln, length, hwloop_label)); // cv.setupi    0,a2,.L1
-      //emit_insn (gen_cv_starti(hwloop_ln, hwloop_label));
+
       emit_insn (gen_option_push ()); //.option    push
       emit_insn (gen_option_norvc ()); //.option    norvc
+
+      // Loop start
+      emit_label (hwloop_label);
+ 
       riscv_emit_move (hwloop_reg0, src_adjusted); //lb    t0,0(a1)
       riscv_emit_move (dest_adjusted, hwloop_reg0); // sb      t0,0(t1)
+ 
       //TODO: Put addi here
-      emit_label(hwloop_label);
+      //emit_label(hwloop_label);
       //riscv_emit_move (gen_rtx_REG (mode, RETURN_ADDR_REGNUM), hwloop_reg1);
-      rtx src_reg, dest_reg;
-      riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
-      riscv_adjust_block_mem (src, INTVAL (GEN_INT(4)), &src_reg, &src);
       //emit_insn(gen_rtx_SET (dest_reg, gen_rtx_PLUS (SImode, dest_reg, GEN_INT(1)))); //addi    t1,t1,1
       riscv_emit_move (dest_reg, plus_constant (SImode, dest_reg, INTVAL(GEN_INT(1))));
-      riscv_emit_move (src_reg, plus_constant (SImode, src_reg, INTVAL(GEN_INT(1))));
-      
+      riscv_emit_move (src_reg,  plus_constant (SImode, src_reg,  INTVAL(GEN_INT(1))));
+
+      riscv_emit_move (count, plus_constant (SImode, count, INTVAL(GEN_INT(1))));
+
+      //Loop condition testing
+      rtx final = GEN_INT (4);
+      rtx test = gen_rtx_NE (VOIDmode, count, final);
+      emit_jump_insn (gen_cbranchsi4 (test, count, final, hwloop_label));
+
       //riscv_emit_move (adjust_address (dest, SImode, offset), src_reg); USE 2 STOP OPTIMISATION OUS
 
       //emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
