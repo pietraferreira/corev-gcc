@@ -3233,94 +3233,11 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
    */
   if (TARGET_COREV_LOOPS)
     {
-      /*HOST_WIDE_INT offset;
-      unsigned HOST_WIDE_INT bits;
-      enum machine_mode mode;
-
-      bits = MAX (BITS_PER_UNIT,
-              MIN (BITS_PER_WORD, MIN (MEM_ALIGN (src), MEM_ALIGN (dest))));
-
-      mode = mode_for_size (bits, MODE_INT, 0).require ();
-      //delta = bits / BITS_PER_UNIT; 
-      
-      offset = INTVAL (GEN_INT(0));
-
-      // Create operands for insns
-      rtx hwloop_ln = GEN_INT (0);
-      //TODO: remove all volatiles
-      volatile rtx hwloop_label = gen_label_rtx ();
-      volatile rtx hwloop_reg0 = gen_reg_rtx(mode);
-      volatile rtx hwloop_reg1 = gen_reg_rtx(mode);
- 
-      //TODO: remove as part of loop test
-      rtx count = gen_reg_rtx(SImode);
-      riscv_emit_move (count, GEN_INT(0));
-      rtx src_reg, dest_reg;
+      rtx src_reg, dest_reg, temp_reg;
       riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
       riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
-
-      //We need to use these to 1. adust the mode to one accepted by emit function
-      //emit-rtl.c:2350 adjust_address_1 defintintion
-      rtx dest_adjusted = adjust_address (dest, mode, offset);
-      rtx src_adjusted = adjust_address (src, mode, offset);
-      riscv_emit_move (hwloop_reg1, dest_adjusted); //mv    t1, a0
-
-      emit_insn (gen_option_push ()); //.option    push
-      emit_insn (gen_option_norvc ()); //.option    norvc
-
-      //TODO: Check this length is number of ints but each int is 4 bytes maybe
-      //      do length * size of int or something??
-      emit_insn (gen_cv_setupi(hwloop_ln, length, hwloop_label)); // cv.setupi    0,a2,.L1
-
-      // Loop start
-      emit_label (hwloop_label);
- 
-      riscv_emit_move (hwloop_reg0, src_adjusted); //lb    t0,0(a1)
-      riscv_emit_move (dest_adjusted, hwloop_reg0); // sb      t0,0(t1)
- 
-      //emit_label(hwloop_label);
-      //riscv_emit_move (gen_rtx_REG (mode, RETURN_ADDR_REGNUM), hwloop_reg1);
-      riscv_emit_move (dest_reg, plus_constant (SImode, dest_reg, INTVAL(GEN_INT(1)))); //addi t1.t1,1  
-      riscv_emit_move (src_reg,  plus_constant (SImode, src_reg,  INTVAL(GEN_INT(1)))); //addi a1,a1,1
-
-      //TODO: remove as part of loop test
-      riscv_emit_move (count, plus_constant (SImode, count, INTVAL(GEN_INT(1))));
-      //Loop condition testing
-      rtx final = GEN_INT (4);
-      rtx test = gen_rtx_NE (VOIDmode, count, final);
-      emit_jump_insn (gen_cbranchsi4 (test, count, final, hwloop_label));
-
-      //riscv_emit_move (adjust_address (dest, SImode, offset), src_reg); USE 2 STOP OPTIMISATION OUS
-
-      //emit_insn (gen_cv_endi(hwloop_ln, hwloop_label));
-      //emit_insn (gen_cv_count(hwloop_ln, hwloop_reg0));
-      //emit_insn (gen_cv_counti(hwloop_ln, hwloop_count));
-      //emit_insn (gen_cv_setup(hwloop_ln, hwloop_reg0, hwloop_label));
-      //emit_insn (gen_cv_setupi(hwloop_ln, hwloop_count, hwloop_label));
-      //emit_label(hwloop_label);
-      emit_insn (gen_option_pop ());*/
-      rtx src_reg, dest_reg;
-      riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
-      riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
-      emit_insn(gen_hwloop_memcpy1(dest_reg,src_reg,length));
-
-      /*
-          unsigned min_iter_words
-            = RISCV_MAX_MOVE_BYTES_PER_LOOP_ITER / UNITS_PER_WORD;
-          unsigned iter_words = min_iter_words;
-          HOST_WIDE_INT bytes = INTVAL (length), words = bytes / UNITS_PER_WORD;
-
-          //Lengthen the loop body if it shortens the tail. 
-        for (unsigned i = min_iter_words; i < min_iter_words * 2 - 1; i++)
-            {
-              unsigned cur_cost = iter_words + words % iter_words;
-              unsigned new_cost = i + words % i;
-              if (new_cost <= cur_cost)
-                iter_words = i;
-            }
-
-          riscv_block_move_loop (dest, src, bytes, iter_words * UNITS_PER_WORD);
-*/
+      temp_reg = gen_reg_rtx(SImode);
+      emit_insn(gen_hwlp_memcpy(dest_reg, src_reg, temp_reg, length));
       return true;
     }
 /* TODO:REMOVE TWO COMMENT OUTS

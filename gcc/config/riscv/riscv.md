@@ -80,7 +80,7 @@
   UNSPECV_OPT_PUSH
   UNSPECV_OPT_NORVC
   UNSPECV_OPT_POP
-  UNSPECV_HWLOOP_MEMCPY1
+  UNSPECV_HWLP_MEMCPY
 ])
 
 (define_constants
@@ -2681,86 +2681,15 @@
   ""
   ".option pop")
 
-;;Instruction pattern for hwloop memcpy
-;;TODO: DELETE THIS
-(define_expand "hwloop_memcpy"
-  [(match_operand 0 "memory_operand")
-   (match_operand 1 "memory_operand")
-   (match_operand 2)
-   (match_operand 3)
-   (match_operand 4)]
-  ""
-{
-   HOST_WIDE_INT offset;
-      unsigned HOST_WIDE_INT bits;
-      enum machine_mode mode;
-
-      bits = MAX (BITS_PER_UNIT,
-              MIN (BITS_PER_WORD, MIN (MEM_ALIGN (operands[1]), MEM_ALIGN (operands[0]))));
-
-      mode = mode_for_size (bits, MODE_INT, 0).require ();
-      //delta = bits / BITS_PER_UNIT; 
-
-      offset = INTVAL (GEN_INT(0));
-
-      // Create operands for insns
-      rtx hwloop_ln = GEN_INT (0);
-      //TODO: remove all volatiles
-      volatile rtx hwloop_label = gen_label_rtx ();
-      volatile rtx hwloop_reg0 = gen_reg_rtx(mode);
-      volatile rtx hwloop_reg1 = gen_reg_rtx(mode);
-
-      //TODO: remove as part of loop test
-      //rtx count = gen_reg_rtx(SImode);
-      //riscv_emit_move (count, GEN_INT(0));
-      //rtx operands[4], operands[3];
-      //riscv_adjust_block_mem (operands[0], INTVAL (GEN_INT(4)), &operands[3], &operands[0]);
-      //riscv_adjust_block_mem (operands[1],  INTVAL (GEN_INT(4)), &operands[4],  &operands[1]);
-
-      //We need to use these to 1. adust the mode to one accepted by emit function
-      //emit-rtl.c:2350 adjust_address_1 defintintion
-      rtx dest_adjusted = adjust_address (operands[0], mode, offset);
-      rtx src_adjusted = adjust_address (operands[1], mode, offset);
-      riscv_emit_move (hwloop_reg1, dest_adjusted); //mv    t1, a0
-
-      emit_insn (gen_option_push ()); //.option    push
-      emit_insn (gen_option_norvc ()); //.option    norvc
-
-      //TODO: Check this length is number of ints but each int is 4 bytes maybe
-      //      do length * size of int or something??
-      emit_insn (gen_cv_setupi(hwloop_ln, operands[2], hwloop_label)); // cv.setupi    0,a2,.L1
-
-      // Loop start
-      emit_label (hwloop_label);
-
-      riscv_emit_move (hwloop_reg0, src_adjusted); //lb    t0,0(a1)
-      riscv_emit_move (dest_adjusted, hwloop_reg0); // sb      t0,0(t1)
-
-      //emit_label(hwloop_label);
-      //riscv_emit_move (gen_rtx_REG (mode, RETURN_ADDR_REGNUM), hwloop_reg1);
-      riscv_emit_move (operands[3], plus_constant (SImode, operands[3], INTVAL(GEN_INT(1)))); //addi t1.t1,1  
-      riscv_emit_move (operands[4],  plus_constant (SImode, operands[4],  INTVAL(GEN_INT(1)))); //addi a1,a1,1
-
-      //TODO: remove as part of loop test
-      //riscv_emit_move (count, plus_constant (SImode, count, INTVAL(GEN_INT(1))));
-      //Loop condition testing
-      //rtx final = GEN_INT (4);
-      //rtx test = gen_rtx_NE (VOIDmode, count, final);
-      //emit_jump_insn (gen_cbranchsi4 (test, count, final, hwloop_label));
-
-      //riscv_emit_move (adjust_address (operands[0], SImode, offset), operands[4]); USE 2 STOP OPTIMISATION OUS
-
-      emit_insn (gen_option_pop ());
-  DONE;
-})
-
-(define_insn "hwloop_memcpy1"
+;;TODO: Maybe hardcode t0 temp reg and clobber -> to decide
+(define_insn "hwlp_memcpy"
   [(unspec_volatile [(match_operand 0 "register_operand")
                      (match_operand 1 "register_operand")
-                     (match_operand 2 )] UNSPECV_HWLOOP_MEMCPY1)]
+                     (match_operand 2 "register_operand")
+                     (match_operand 3 )] UNSPECV_HWLP_MEMCPY)]
   ""
-  "cv.setupi 0,%2,0f\n\t.option\tpush\n\t.option\tnorvc\n\tlb\tt0,0(%1)
-   \tsb\tt0,0(t1)\n\taddi\t %1,%1,1\n0:\taddi\tt1,t1,1\n\t.option\tpop\n"
+  "cv.setupi 0,%3,0f\n\t.option\tpush\n\t.option\tnorvc\n\tlb\t%2,0(%1)
+   \tsb\t%2,0(%0)\n\taddi\t%1,%1,1\n0:\taddi\t%0,%0,1\n\t.option\tpop\n"
 )
 
 (include "sync.md")
