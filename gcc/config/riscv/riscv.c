@@ -3208,8 +3208,8 @@ riscv_block_move_loop (rtx dest, rtx src, HOST_WIDE_INT length,
   /* Move on to the next block.  */
   riscv_emit_move (src_reg, plus_constant (Pmode, src_reg, bytes_per_iter));
   riscv_emit_move (dest_reg, plus_constant (Pmode, dest_reg, bytes_per_iter));
-  
-  //Emit the loop condition.  
+
+  /* Emit the loop condition.  */
   test = gen_rtx_NE (VOIDmode, src_reg, final_src);
   if (Pmode == DImode)
     emit_jump_insn (gen_cbranchdi4 (test, src_reg, final_src, label));
@@ -3223,14 +3223,26 @@ riscv_block_move_loop (rtx dest, rtx src, HOST_WIDE_INT length,
     emit_insn(gen_nop ());
 }
 
+/* Move LENGTH bytes from SRC to DEST using a CORE-V hardware loop.  
+   LENGTH must be at least BYTES_PER_ITER.  Assume that
+   the memory regions do not overlap.  */
+//TODO: LOOK AT COMMENT REGION OVERLAP
+static void
+riscv_block_move_cv_hwlp (rtx dest, rtx src, rtx length)
+{
+  rtx src_reg, dest_reg, temp_reg;
+  riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
+  riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
+  temp_reg = gen_reg_rtx(SImode);
+  emit_insn(gen_hwlp_memcpy(dest_reg, src_reg, temp_reg, length));
+}
+
 /* Expand a cpymemsi instruction, which copies LENGTH bytes from
    memory reference SRC to memory reference DEST.  */
 
 bool
 riscv_expand_block_move (rtx dest, rtx src, rtx length)
 {
-  /* TODO: this does not belong here, if the function returns false then memcopy is called, if it returns true like in the if statement below then the assembly is emitted here.
-   */
   if (CONST_INT_P (length))
     {
       HOST_WIDE_INT factor, align;
@@ -3239,25 +3251,22 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       factor = BITS_PER_WORD / align;
 
       if (optimize_function_for_size_p (cfun)
-	  && INTVAL (length) * factor * UNITS_PER_WORD > MOVE_RATIO (false))//TODO: If optimise for size is true we call memcpy
+	  && INTVAL (length) * factor * UNITS_PER_WORD > MOVE_RATIO (false))
 	return false;
 
-      if (INTVAL (length) <= RISCV_MAX_MOVE_BYTES_STRAIGHT / factor) // TODO: If its only short then no need for loop
+      if (INTVAL (length) <= RISCV_MAX_MOVE_BYTES_STRAIGHT / factor)
 	{
 	  riscv_block_move_straight (dest, src, INTVAL (length));
 	  return true;
 	}
-      else if (optimize && TARGET_COREV_LOOPS) //HWLOOP start TODO: Optimisation and align??
+      /* CORE-V specific */
+      else if (optimize && TARGET_COREV_HWLP)
         {//TODO: LOOK INTO the point at which this is faster that move_loop as could be more expensive than conventional loops
-          rtx src_reg, dest_reg, temp_reg;
-          riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
-          riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
-          temp_reg = gen_reg_rtx(SImode);
-          emit_insn(gen_hwlp_memcpy(dest_reg, src_reg, temp_reg, length));
-          return true;
+	  riscv_block_move_cv_hwlp(dest, src, length);
+	  return true;
         }
-      else if (optimize && align >= BITS_PER_WORD) //If optimise level is > 0 we do a loop -> I think we can put it here
-	{
+      else if (optimize && align >= BITS_PER_WORD)
+      {
 	  unsigned min_iter_words
 	    = RISCV_MAX_MOVE_BYTES_PER_LOOP_ITER / UNITS_PER_WORD;
 	  unsigned iter_words = min_iter_words;
@@ -3275,7 +3284,7 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
 	  return true;
 	}
     }
-  return false; //If none of these are true we call memcpy
+  return false;
 }
 
 /* Print symbolic operand OP, which is part of a HIGH or LO_SUM

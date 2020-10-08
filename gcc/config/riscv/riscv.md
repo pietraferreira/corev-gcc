@@ -70,17 +70,6 @@
   UNSPEC_SSP_SET
   UNSPEC_SSP_TEST
 
-  ;; CORE-V HWLP
-  UNSPECV_CV_STARTI
-  UNSPECV_CV_ENDI
-  UNSPECV_CV_COUNT
-  UNSPECV_CV_COUNTI
-  UNSPECV_CV_SETUP
-  UNSPECV_CV_SETUPI
-  UNSPECV_OPT_PUSH
-  UNSPECV_OPT_NORVC
-  UNSPECV_OPT_POP
-  UNSPECV_HWLP_MEMCPY
 ])
 
 (define_constants
@@ -2615,69 +2604,9 @@
   "<load>\t%3, %1\;<load>\t%0, %2\;xor\t%0, %3, %0\;li\t%3, 0"
   [(set_attr "length" "12")])
 
-
-;;
-;;  ....................
-;;
-;;      CORE-V HWLP INSN
-;;
-;;  ....................
-;; gcc -enable-corev-loop
-
-;;TODO: choose this or the other one
-
-(define_insn "cv_starti"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (label_ref (match_operand 1 "label_or_sleu_operand"))] UNSPECV_CV_STARTI)
-   (use (label_ref (match_dup 1)))]
-  "TARGET_COREV_LOOPS"
-  "cv.starti %0, %1")
-
-(define_insn "cv_endi"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (match_operand 1 "label_or_sleu_operand")] UNSPECV_CV_ENDI)];;*PUT SYM_OR_SLEU HERE*
-  "TARGET_COREV_LOOPS"
-  "cv.endi %0, %1")
-
-(define_insn "cv_count"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (match_operand 1 "register_operand" "r")] UNSPECV_CV_COUNT)] ;; TODO: READ? Note: the r contraints to general purpose register, couldnt use a floating point one
-  "TARGET_COREV_LOOPS"
-  "cv.count %0, %1")
-
-(define_insn "cv_counti"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (match_operand 1 "const_int_operand")] UNSPECV_CV_COUNTI)] ;;TODO: Same as above
-  "TARGET_COREV_LOOPS"
-  "cv.counti %0, %1")
-
-(define_insn "cv_setup"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (match_operand 1 "register_operand" "r");; TODO READ ONLY?
-		     (match_operand 2 "label_or_sleu_operand")] UNSPECV_CV_SETUP)];;*PUT SYM_OR_SLEU HERE*
-  "TARGET_COREV_LOOPS"
-  "cv.setup %0, %1, %2")
-
-(define_insn "cv_setupi"
-  [(unspec_volatile [(match_operand 0 "one_bit_operand")
-                     (match_operand 1 "sleu_operand")  
-                     (match_operand 2 "five_bit_sleu_or_label_operand")] UNSPECV_CV_SETUPI)];;TODO: uimmS is a label?? NEED TO CREATE A 5 BIT SLEU***
-  "TARGET_COREV_LOOPS"
-  "cv.setupi %0, %1, %2")
-
-;;TODO: Maybe hardcode t0 temp reg and clobber -> to decide
-(define_insn "hwlp_memcpy"
-  [(unspec_volatile [(match_operand 0 "register_operand")
-                     (match_operand 1 "register_operand")
-                     (match_operand 2 "register_operand")
-                     (match_operand 3 )] UNSPECV_HWLP_MEMCPY)]
-  "TARGET_COREV_LOOPS"
-  "cv.setupi 0,%3,0f\n\t.option\tpush\n\t.option\tnorvc\n\tlb\t%2,0(%1)
-   \tsb\t%2,0(%0)\n\taddi\t%1,%1,1\n\n0:\taddi\t%0,%0,1\n\t.option\tpop\n"
-)
-
 (include "sync.md")
 (include "peephole.md")
 (include "pic.md")
 (include "generic.md")
 (include "sifive-7.md")
+(include "corev.md")

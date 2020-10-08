@@ -647,13 +647,13 @@ riscv_parse_arch_string (const char *isa, int *flags, location_t loc)
   if (subset_list->lookup ("c"))
     *flags |= MASK_RVC;
 
-  *flags &= ~MASK_COREV_LOOPS;
+  *flags &= ~MASK_COREV_HWLP;
   if (subset_list->lookup ("xcorevhwlp"))
-    *flags |= MASK_COREV_LOOPS;
+    *flags |= MASK_COREV_HWLP;
 
   /* Generic CORE-V includes all other extensions */
   if (subset_list->lookup ("xcorev"))
-    *flags |= MASK_COREV_LOOPS;
+    *flags |= MASK_COREV_HWLP;
 
   if (current_subset_list)
     delete current_subset_list;
