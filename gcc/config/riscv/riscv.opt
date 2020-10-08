@@ -134,7 +134,7 @@ Mask(RVC)
 
 Mask(RVE)
 
-Mask(COREV_LOOPS)
+Mask(COREV_HWLP)
 
 mriscv-attribute
 Target Report Var(riscv_emit_attribute_p) Init(-1)

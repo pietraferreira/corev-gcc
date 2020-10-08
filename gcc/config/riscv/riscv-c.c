@@ -62,8 +62,8 @@ riscv_cpu_cpp_builtins (cpp_reader *pfile)
       builtin_define ("__riscv_fsqrt");
     }
 
-  if (TARGET_COREV_LOOPS)
-    builtin_define ("__riscv_corev_loops");
+  if (TARGET_COREV_HWLP)
+    builtin_define ("__riscv_corev_hwlp");
 
   switch (riscv_abi)
     {
