@@ -62,6 +62,9 @@ riscv_cpu_cpp_builtins (cpp_reader *pfile)
       builtin_define ("__riscv_fsqrt");
     }
 
+  if (TARGET_COREV_LOOPS)
+    builtin_define ("__riscv_corev_loops");
+
   switch (riscv_abi)
     {
     case ABI_ILP32E:
