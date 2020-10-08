@@ -3231,16 +3231,6 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
 {
   /* TODO: this does not belong here, if the function returns false then memcopy is called, if it returns true like in the if statement below then the assembly is emitted here.
    */
-  if (TARGET_COREV_LOOPS)
-    {
-      rtx src_reg, dest_reg, temp_reg;
-      riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
-      riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
-      temp_reg = gen_reg_rtx(SImode);
-      emit_insn(gen_hwlp_memcpy(dest_reg, src_reg, temp_reg, length));
-      return true;
-    }
-/* TODO:REMOVE TWO COMMENT OUTS
   if (CONST_INT_P (length))
     {
       HOST_WIDE_INT factor, align;
@@ -3249,23 +3239,31 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
       factor = BITS_PER_WORD / align;
 
       if (optimize_function_for_size_p (cfun)
-	  && INTVAL (length) * factor * UNITS_PER_WORD > MOVE_RATIO (false))
+	  && INTVAL (length) * factor * UNITS_PER_WORD > MOVE_RATIO (false))//TODO: If optimise for size is true we call memcpy
 	return false;
 
-      if (INTVAL (length) <= RISCV_MAX_MOVE_BYTES_STRAIGHT / factor)
+      if (INTVAL (length) <= RISCV_MAX_MOVE_BYTES_STRAIGHT / factor) // TODO: If its only short then no need for loop
 	{
 	  riscv_block_move_straight (dest, src, INTVAL (length));
 	  return true;
 	}
-      else if (optimize && align >= BITS_PER_WORD)
+      else if (optimize && TARGET_COREV_LOOPS) //HWLOOP start TODO: Optimisation and align??
+        {//TODO: LOOK INTO the point at which this is faster that move_loop as could be more expensive than conventional loops
+          rtx src_reg, dest_reg, temp_reg;
+          riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
+          riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
+          temp_reg = gen_reg_rtx(SImode);
+          emit_insn(gen_hwlp_memcpy(dest_reg, src_reg, temp_reg, length));
+          return true;
+        }
+      else if (optimize && align >= BITS_PER_WORD) //If optimise level is > 0 we do a loop -> I think we can put it here
 	{
 	  unsigned min_iter_words
 	    = RISCV_MAX_MOVE_BYTES_PER_LOOP_ITER / UNITS_PER_WORD;
 	  unsigned iter_words = min_iter_words;
 	  HOST_WIDE_INT bytes = INTVAL (length), words = bytes / UNITS_PER_WORD;
-*/
 	  /* Lengthen the loop body if it shortens the tail.  */
-/*	  for (unsigned i = min_iter_words; i < min_iter_words * 2 - 1; i++)
+	  for (unsigned i = min_iter_words; i < min_iter_words * 2 - 1; i++)
 	    {
 	      unsigned cur_cost = iter_words + words % iter_words;
 	      unsigned new_cost = i + words % i;
@@ -3276,8 +3274,8 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
 	  riscv_block_move_loop (dest, src, bytes, iter_words * UNITS_PER_WORD);
 	  return true;
 	}
-    }*/
-  return false;
+    }
+  return false; //If none of these are true we call memcpy
 }
 
 /* Print symbolic operand OP, which is part of a HIGH or LO_SUM
