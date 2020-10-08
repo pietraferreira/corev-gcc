@@ -2665,22 +2665,6 @@
   ""
   "cv.setupi %0, %1, %2")
 
-(define_insn "option_push"
-  [(unspec_volatile [(const_int 0)] UNSPECV_OPT_PUSH)]
-  ""
-  ".option push")
-
-(define_insn "option_norvc"
-  [(unspec_volatile [(const_int 0)] UNSPECV_OPT_NORVC)]
-  ""
-  ".option norvc")
-
-
-(define_insn "option_pop"
-  [(unspec_volatile [(const_int 0)] UNSPECV_OPT_POP)]
-  ""
-  ".option pop")
-
 ;;TODO: Maybe hardcode t0 temp reg and clobber -> to decide
 (define_insn "hwlp_memcpy"
   [(unspec_volatile [(match_operand 0 "register_operand")
@@ -2689,7 +2673,7 @@
                      (match_operand 3 )] UNSPECV_HWLP_MEMCPY)]
   ""
   "cv.setupi 0,%3,0f\n\t.option\tpush\n\t.option\tnorvc\n\tlb\t%2,0(%1)
-   \tsb\t%2,0(%0)\n\taddi\t%1,%1,1\n0:\taddi\t%0,%0,1\n\t.option\tpop\n"
+   \tsb\t%2,0(%0)\n\taddi\t%1,%1,1\n\n0:\taddi\t%0,%0,1\n\t.option\tpop\n"
 )
 
 (include "sync.md")
