@@ -648,6 +648,10 @@ riscv_parse_arch_string (const char *isa, int *flags, location_t loc)
     *flags |= MASK_RVC;
 
   *flags &= ~MASK_COREV_LOOPS;
+  if (subset_list->lookup ("xcorevhwlp"))
+    *flags |= MASK_COREV_LOOPS;
+
+  /* Generic CORE-V includes all other extensions */
   if (subset_list->lookup ("xcorev"))
     *flags |= MASK_COREV_LOOPS;
 
