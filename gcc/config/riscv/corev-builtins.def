@@ -1,0 +1,1 @@
+DIRECT_COREV_BUILTIN(cv_macsn,           macsn,          RISCV_INT_FTYPE_SHORT_SHORT_INT_SHORT,            corevmac)

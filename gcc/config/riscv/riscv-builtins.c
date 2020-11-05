@@ -40,6 +40,11 @@ along with GCC; see the file COPYING3.  If not see
 /* Macros to create an enumeration identifier for a function prototype.  */
 #define RISCV_FTYPE_NAME0(A) RISCV_##A##_FTYPE
 #define RISCV_FTYPE_NAME1(A, B) RISCV_##A##_FTYPE_##B
+#define RISCV_FTYPE_NAME2(A, B, C) RISCV_##A##_FTYPE_##B##_##C
+#define RISCV_FTYPE_NAME3(A, B, C, D) RISCV_##A##_FTYPE_##B##_##C##_##D
+#define RISCV_FTYPE_NAME4(A, B, C, D, E) RISCV_##A##_FTYPE_##B##_##C##_##D##_##E
+#define RISCV_FTYPE_NAME5(A, B, C, D, E, F) RISCV_##A##_FTYPE_##B##_##C##_##D##_##E##_##F
+#define RISCV_FTYPE_NAME6(A, B, C, D, E, F, G) RISCV_##A##_FTYPE_##B##_##C##_##D##_##E##_##F##_##G
 
 /* Classifies the prototype of a built-in function.  */
 enum riscv_function_type {
@@ -87,6 +92,15 @@ struct riscv_builtin_description {
 
 AVAIL (hard_float, TARGET_HARD_FLOAT)
 
+static unsigned int
+riscv_builtin_avail_corevmac (void)
+{
+  if (TARGET_COREV_MAC)
+    return 1;
+
+  return 0;
+}
+
 /* Construct a riscv_builtin_description from the given arguments.
 
    INSN is the name of the associated instruction pattern, without the
@@ -101,13 +115,20 @@ AVAIL (hard_float, TARGET_HARD_FLOAT)
    riscv_builtin_avail_.  */
 #define RISCV_BUILTIN(INSN, NAME, BUILTIN_TYPE,	FUNCTION_TYPE, AVAIL)	\
   { CODE_FOR_riscv_ ## INSN, "__builtin_riscv_" NAME,			\
-    BUILTIN_TYPE, FUNCTION_TYPE, riscv_builtin_avail_ ## AVAIL }
+    BUILTIN_TYPE, FUNCTION_TYPE, riscv_builtin_avail_ ## AVAIL },
+
+#define RISCV_COREV_BUILTIN(INSN, NAME, BUILTIN_TYPE, FUNCTION_TYPE, AVAIL)   \
+  { CODE_FOR_ ## INSN, "__builtin_corev_" NAME,                          \
+    BUILTIN_TYPE, FUNCTION_TYPE, riscv_builtin_avail_ ## AVAIL },
 
 /* Define __builtin_riscv_<INSN>, which is a RISCV_BUILTIN_DIRECT function
    mapped to instruction CODE_FOR_riscv_<INSN>,  FUNCTION_TYPE and AVAIL
    are as for RISCV_BUILTIN.  */
 #define DIRECT_BUILTIN(INSN, FUNCTION_TYPE, AVAIL)			\
   RISCV_BUILTIN (INSN, #INSN, RISCV_BUILTIN_DIRECT, FUNCTION_TYPE, AVAIL)
+
+#define DIRECT_COREV_BUILTIN(INSN, NAME, FUNCTION_TYPE, AVAIL)                        \
+  RISCV_COREV_BUILTIN (INSN, #NAME, RISCV_BUILTIN_DIRECT, FUNCTION_TYPE, AVAIL)
 
 /* Define __builtin_riscv_<INSN>, which is a RISCV_BUILTIN_DIRECT_NO_TARGET
    function mapped to instruction CODE_FOR_riscv_<INSN>,  FUNCTION_TYPE
@@ -128,7 +149,8 @@ AVAIL (hard_float, TARGET_HARD_FLOAT)
   RISCV_ATYPE_##A, RISCV_ATYPE_##B
 
 static const struct riscv_builtin_description riscv_builtins[] = {
-  DIRECT_BUILTIN (frflags, RISCV_USI_FTYPE, hard_float),
+  #include "corev-builtins.def"
+  DIRECT_BUILTIN (frflags, RISCV_USI_FTYPE, hard_float)
   DIRECT_NO_TARGET_BUILTIN (fsflags, RISCV_VOID_FTYPE_USI, hard_float)
 };
 
@@ -142,6 +164,92 @@ static GTY(()) int riscv_builtin_decl_index[NUM_INSN_CODES];
 
 #define GET_BUILTIN_DECL(CODE) \
   riscv_builtin_decls[riscv_builtin_decl_index[(CODE)]]
+
+/* Source-level argument types.  */
+#define RISCV_ATYPE_VOID void_type_node
+#define RISCV_ATYPE_CHAR char_type_node
+#define RISCV_ATYPE_SHORT short_integer_type_node
+#define RISCV_ATYPE_INT integer_type_node
+#define RISCV_ATYPE_POINTER ptr_type_node
+#define RISCV_ATYPE_CPOINTER const_ptr_type_node
+#define RISCV_ATYPE_INTPTR integer_ptr_type_node
+
+/* Standard mode-based argument types.  */
+#define RISCV_ATYPE_UQI unsigned_intQI_type_node
+#define RISCV_ATYPE_SI intSI_type_node
+#define RISCV_ATYPE_USI unsigned_intSI_type_node
+#define RISCV_ATYPE_DI intDI_type_node
+#define RISCV_ATYPE_UDI unsigned_intDI_type_node
+#define RISCV_ATYPE_SF float_type_node
+#define RISCV_ATYPE_DF double_type_node
+#define RISCV_ATYPE_HF floatHF_type_node
+#define RISCV_ATYPE_OHF floatOHF_type_node
+
+#define RISCV_ATYPE_V2HI opaque_V2HI_type_node
+#define RISCV_ATYPE_V2HF opaque_V2HF_type_node
+#define RISCV_ATYPE_V2OHF opaque_V2OHF_type_node
+#define RISCV_ATYPE_V4QI opaque_V4QI_type_node
+
+/* RISCV_FTYPE_ATYPESN takes N RISCV_FTYPES-like type codes and lists
+   their associated RISCV_ATYPEs.  */
+#define RISCV_FTYPE_ATYPES1(A, B) \
+  RISCV_ATYPE_##A, RISCV_ATYPE_##B
+
+#define RISCV_FTYPE_ATYPES2(A, B, C) \
+  RISCV_ATYPE_##A, RISCV_ATYPE_##B, RISCV_ATYPE_##C
+
+#define RISCV_FTYPE_ATYPES3(A, B, C, D) \
+  RISCV_ATYPE_##A, RISCV_ATYPE_##B, RISCV_ATYPE_##C, RISCV_ATYPE_##D
+
+#define RISCV_FTYPE_ATYPES4(A, B, C, D, E) \
+  RISCV_ATYPE_##A, RISCV_ATYPE_##B, RISCV_ATYPE_##C, RISCV_ATYPE_##D, \
+  RISCV_ATYPE_##E
+
+#define RISCV_FTYPE_ATYPES5(A, B, C, D, E, F) \
+  RISCV_ATYPE_##A, RISCV_ATYPE_##B, RISCV_ATYPE_##C, RISCV_ATYPE_##D, \
+  RISCV_ATYPE_##E, RISCV_ATYPE_##F
+
+#define RISCV_FTYPE_ATYPES6(A, B, C, D, E, F, G) \
+  RISCV_ATYPE_##A, RISCV_ATYPE_##B, RISCV_ATYPE_##C, RISCV_ATYPE_##D, \
+  RISCV_ATYPE_##E, RISCV_ATYPE_##F, RISCV_ATYPE_##G
+
+/* Return the function type associated with function prototype TYPE.  */
+
+#define MAX_REMAPPED_GOMP 20
+static struct {
+	unsigned int Gomp;
+	unsigned int Pulp;
+} Remapped_GOMP_Builtins[MAX_REMAPPED_GOMP];
+
+static int Head_Remapped_GOMP_Builtins=0;
+
+enum Riscv_Native_GOMP_Builtins {
+	NATIVE_GOMP_LOOP_CHUNK_SIZE = 0,
+	NATIVE_GOMP_LOOP_START = 1,
+	NATIVE_GOMP_LAST = 2
+};
+
+static struct {
+	tree	TypeDescr;
+	int	Base;
+	int 	Index;
+} Native_GOMP_Builtins[NATIVE_GOMP_LAST] =
+{
+	{NULL, 0x00204000, 0x70},		// OMP Loop Chunk Size
+	{NULL, 0x00204000, 0x64},		// OMP Loop Start
+};
+
+unsigned int GetRemappedGompBuiltin(unsigned int ompcode, unsigned int def_ret)
+
+{
+	int i;
+
+	for (i=0; i<Head_Remapped_GOMP_Builtins; i++) {
+		if (Remapped_GOMP_Builtins[i].Gomp == ompcode) return Remapped_GOMP_Builtins[i].Pulp;
+	}
+	return def_ret ;
+}
+
 
 /* Return the function type associated with function prototype TYPE.  */
 

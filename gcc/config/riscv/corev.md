@@ -31,6 +31,8 @@
   UNSPECV_CV_SETUPI
   UNSPECV_HWLP_MEMCPY
 
+  ;; CORE-V MAC
+  UNSPECV_CV_MACSN
 ])
 
 ;;
@@ -39,7 +41,7 @@
 ;;      CORE-V HWLP INSN
 ;;
 ;;  ....................
-;; gcc -enable-corev-loop
+;;
 
 ;;TODO: choose this or the other one
 
@@ -92,3 +94,33 @@
   "cv.setupi 0,%3,0f\n\t.option\tpush\n\t.option\tnorvc\n\tlb\t%2,0(%1)
    \tsb\t%2,0(%0)\n\taddi\t%1,%1,1\n\n0:\taddi\t%0,%0,1\n\t.option\tpop\n"
 )
+
+;;
+;;  ....................
+;;
+;;      CORE-V MAC INSN
+;;
+;;  ....................
+;;
+
+
+(define_insn "cv_macsn"
+  [(unspec_volatile
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (ashiftrt:SI
+                (plus:SI
+                        (mult:SI (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
+                                 (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
+                        )
+                        (match_operand:SI 3 "register_operand" "0")
+                )
+                (match_operand:SI 4 "five_bit_sleu_operand" "i")
+        )
+   )]
+  UNSPECV_CV_MACSN)]
+  "TARGET_COREV_MAC"
+  "cv.macsn \t%0,%1,%2,%4"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
