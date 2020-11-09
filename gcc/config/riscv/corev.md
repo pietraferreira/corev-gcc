@@ -135,6 +135,32 @@ UNSPECV_MACS_MACSRNF
    (set_attr "mode" "SI")]
 )
 
+
+(define_insn "cv_muls"
+   [(set (match_operand:SI 0 "register_operand" "=r")
+        (mult: SI (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
+                  (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
+        )
+   )]
+  "TARGET_COREV_MAC"
+  "cv.muls\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_mulhhs"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (mult:SI (sign_extend:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r") (const_int 16)))
+                 (sign_extend:SI (lshiftrt:SI (match_operand:SI 2 "register_operand" "r") (const_int 16)))
+        )
+   )
+  ]
+  "TARGET_COREV_MAC"
+  "cv.mulhhs\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
 (define_insn "cv_mulhhsrn"
   [(set (match_operand:SI 0 "register_operand" "=r")
         (ashiftrt:SI
@@ -180,6 +206,86 @@ UNSPECV_MACS_MACSRNF
   ]
   "TARGET_COREV_MAC"
   "cv.mulhhu \t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_mulun"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (lshiftrt:SI
+                (mult:SI (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
+                         (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
+                )
+                (match_operand:SI 3 "immediate_operand" "i")
+        )
+   )
+  ]
+  "TARGET_COREV_MAC"
+  "cv.mulun\t%0,%1,%2,%3"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_mulhhun"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (lshiftrt:SI
+                (mult:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r") (const_int 16))
+                         (lshiftrt:SI (match_operand:SI 2 "register_operand" "r") (const_int 16))
+                )
+                (match_operand:SI 3 "immediate_operand" "i")
+        )
+   )
+  ]
+  "TARGET_COREV_MAC"
+  "cv.mulhhun\t%0,%1,%2,%3"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_mulurn"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (lshiftrt:SI
+                        (plus:SI
+                                (mult:SI (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
+                                         (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
+                                )
+                        
+                        	(ashift:SI
+                                	(const_int 1)
+                                	(minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                                                  (const_int 1)
+                           		)
+                        	)
+			)
+                	(match_dup 3)
+        )	
+   )]
+  "TARGET_COREV_MAC"
+  "cv.mulurn\t%0,%1,%2,%3"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+
+(define_insn "cv_mulhhurn"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (lshiftrt:SI
+       		(plus:SI
+                                (mult:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r") (const_int 16))
+                                         (lshiftrt:SI (match_operand:SI 2 "register_operand" "r") (const_int 16))
+                                )
+                        	(ashift:SI
+                                	(const_int 1)
+                                	(minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                                          (const_int 1)
+					)
+                                )
+                        )
+               (match_dup 3)
+        )
+   )]
+  "TARGET_COREV_MAC"
+  "cv.mulhhurn\t%0,%1,%2,%3"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
