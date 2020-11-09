@@ -2,7 +2,9 @@ DIRECT_COREV_BUILTIN(cv_mac,             mac,            RISCV_INT_FTYPE_INT_INT
 DIRECT_COREV_BUILTIN(cv_msu,             msu,            RISCV_INT_FTYPE_INT_INT_INT,                      corevmac)
 DIRECT_COREV_BUILTIN(cv_muls,            muls,           RISCV_INT_FTYPE_SHORT_SHORT,                      corevmac)
 DIRECT_COREV_BUILTIN(cv_mulhhs,          mulhhs,         RISCV_INT_FTYPE_INT_INT,                          corevmac)
-
+DIRECT_COREV_BUILTIN(cv_mulsn,           mulsn,          RISCV_INT_FTYPE_SHORT_SHORT_SHORT,              corevmac)
+DIRECT_COREV_BUILTIN(cv_mulhhsn,         mulhhsn,        RISCV_INT_FTYPE_INT_INT_SHORT,                   corevmac)
+DIRECT_COREV_BUILTIN(cv_mulsrn,          mulsrn,         RISCV_INT_FTYPE_SHORT_SHORT_SHORT,              corevmac)
 
 DIRECT_COREV_BUILTIN(cv_mulhhsrn,             mulhhsrn,            RISCV_INT_FTYPE_INT_INT_SHORT,                      corevmac)
 DIRECT_COREV_BUILTIN(cv_mulu,            mulu,           RISCV_INT_FTYPE_SHORT_SHORT,                      corevmac)
