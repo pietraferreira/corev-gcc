@@ -535,6 +535,7 @@ UNSPECV_MACS_MACSRNF
    (set_attr "mode" "SI")]
 )
 
+
 ;;
 ;;  ....................
 ;;
@@ -542,8 +543,22 @@ UNSPECV_MACS_MACSRNF
 ;;
 ;;  ....................
 ;;
-
 ;;TODO: CHANGE TARGET TO COREV_ALU
+
+(define_insn "cv_abs"
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (if_then_else:SI
+            (lt:SI (match_operand:SI 1 "register_operand" "r")
+                   (const_int 0))
+                (neg:SI (match_dup 1))
+            (match_dup 1)
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.abs\t%0,%1"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
 
 (define_insn "cv_addunr"
   [(set (match_operand:SI 0 "register_operand" "=r")
@@ -817,4 +832,3 @@ UNSPECV_MACS_MACSRNF
   [(set_attr "type" "arith")
  (set_attr "mode" "SI")]
 )
-
