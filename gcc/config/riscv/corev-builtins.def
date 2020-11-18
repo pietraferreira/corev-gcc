@@ -23,6 +23,16 @@ DIRECT_COREV_BUILTIN(cv_machhurn,        machhurn,       RISCV_INT_FTYPE_INT_INT
 
 //TODO: Change from xcorevmac to xcorevalu
 DIRECT_COREV_BUILTIN(cv_abs,             abs,            RISCV_INT_FTYPE_INT,                          corevmac)
+DIRECT_COREV_BUILTIN(cv_slet,            slet,           RISCV_INT_FTYPE_INT_INT,                      corevmac)
+DIRECT_COREV_BUILTIN(cv_sletu,           sletu,          RISCV_INT_FTYPE_INT_INT,                      corevmac)
+DIRECT_COREV_BUILTIN(cv_min,             min,            RISCV_INT_FTYPE_INT_INT,                      corevmac)
+DIRECT_COREV_BUILTIN(cv_minu,            minu,           RISCV_INT_FTYPE_INT_INT,                      corevmac)
+DIRECT_COREV_BUILTIN(cv_max,             max,            RISCV_INT_FTYPE_INT_INT,                      corevmac)
+DIRECT_COREV_BUILTIN(cv_maxu,            maxu,           RISCV_INT_FTYPE_INT_INT,                      corevmac)
+DIRECT_COREV_BUILTIN(cv_exths,           exths,          RISCV_INT_FTYPE_SHORT,                        corevmac)
+DIRECT_COREV_BUILTIN(cv_exthz,           exthz,          RISCV_INT_FTYPE_SHORT,                        corevmac)
+DIRECT_COREV_BUILTIN(cv_extbs,           extbs,          RISCV_INT_FTYPE_SHORT,                        corevmac)
+
 DIRECT_COREV_BUILTIN(cv_addunr,        addunr,       RISCV_INT_FTYPE_INT_INT_SHORT,                corevalu) //TODO: AM I RIGHT TO MAKE SHORT??
 DIRECT_COREV_BUILTIN(cv_addrnr,        addrnr,       RISCV_INT_FTYPE_INT_INT_SHORT,                corevalu)
 DIRECT_COREV_BUILTIN(cv_addurnr,        addurnr,       RISCV_INT_FTYPE_INT_INT_SHORT,                corevalu)

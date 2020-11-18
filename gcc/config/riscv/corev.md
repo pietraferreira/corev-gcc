@@ -560,6 +560,129 @@ UNSPECV_MACS_MACSRNF
    (set_attr "mode" "SI")]
 )
 
+(define_insn "cv_slet"
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (if_then_else:SI
+            (le:SI (match_operand:SI 1 "register_operand" "r")
+                   (match_operand:SI 2 "register_operand" "r"))
+                (const_int 1)
+            (const_int 0)
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.slet\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_sletu" /*TODO: unsigned */
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (if_then_else:SI
+            (le:SI (match_operand:SI 1 "register_operand" "r")
+                   (match_operand:SI 2 "register_operand" "r"))
+                (const_int 1)
+            (const_int 0)
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.sletu\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_min"
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (if_then_else:SI
+            (lt:SI (match_operand:SI 1 "register_operand" "r")
+                    (match_operand:SI 2 "register_operand" "r"))
+                (match_dup 1)
+            (match_dup 2)
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.min\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_minu" /*TODO: unsigned */
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (if_then_else:SI
+            (lt:SI (match_operand:SI 1 "register_operand" "r")
+                    (match_operand:SI 2 "register_operand" "r"))
+                (match_dup 1)
+            (match_dup 2)
+        ) 
+  )]
+  "TARGET_COREV_MAC"
+  "cv.minu\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+  
+(define_insn "cv_max"
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (if_then_else:SI
+            (lt:SI (match_operand:SI 1 "register_operand" "r")
+                    (match_operand:SI 2 "register_operand" "r"))
+                (match_dup 2)
+            (match_dup 1)
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.max\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_maxu" /*TODO: unsigned */
+    [(set (match_operand:SI 0 "register_operand" "=r")
+        (if_then_else:SI
+            (lt:SI (match_operand:SI 1 "register_operand" "r")
+                    (match_operand:SI 2 "register_operand" "r"))
+                (match_dup 2)
+            (match_dup 1)
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.maxu\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_exths"
+    [(set (match_operand:SI 0 "register_operand" "=r")
+          (sign_extend:SI (match_operand:HI 1 "register_operand" "r")
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.exths\t%0,%1"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_exthz"
+    [(set (match_operand:SI 0 "register_operand" "=r")
+          (zero_extend:SI (match_operand:HI 1 "register_operand" "r")
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.exthz\t%0,%1"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_extbs"
+    [(set (match_operand:SI 0 "register_operand" "=r")
+          (sign_extend:SI (match_operand:QI 1 "register_operand" "r")
+        )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.extbs\t%0,%1"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
 (define_insn "cv_addunr"
   [(set (match_operand:SI 0 "register_operand" "=r")
         (lshiftrt:SI
@@ -831,4 +954,4 @@ UNSPECV_MACS_MACSRNF
   "cv.suburnr\t%0,%2,%3"
   [(set_attr "type" "arith")
  (set_attr "mode" "SI")]
-)
+ )
