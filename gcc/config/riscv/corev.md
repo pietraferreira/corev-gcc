@@ -534,3 +534,116 @@ UNSPECV_MACS_MACSRNF
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
+
+;;
+;;  ....................
+;;
+;;      CORE-V ALU INSN
+;;
+;;  ....................
+;;
+
+(define_insn "cv_extbz"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+    (zero_extend:SI (match_operand:QI 1 "register_operand" "r"))
+  )]
+  "TARGET_COREV_MAC"
+  "cv.extbz\t%0,%1"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_addn"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+    (ashiftrt:SI
+      (plus:SI
+        (ashiftrt:SI (match_operand:SI 1 "register_operand" "r"))
+        (ashiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+      )
+      (match_operand:SI 3 "immediate_operand" "i")
+    )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.addn\t%0,%1,%2,%3"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_addun"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+    (lshiftrt:SI
+      (plus:SI
+        (lshiftrt:SI (match_operand:SI 1 "register_operand" "r"))
+        (lshiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+      )
+      (match_operand:SI 3 "immediate_operand" "i")
+    )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.addun\t%0,%1,%2,%3"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_addrn"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+    (ashiftrt:SI
+      (plus:SI
+	(plus:SI (ashiftrt:SI (match_operand:SI 1 "register_operand" "r"))
+	         (ashiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+	)
+	(ashift:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
+      )
+      (match_dup 3)
+    )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.addrn\t%0,%1,%2,%3"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_addurn"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+    (lshiftrt:SI
+      (plus:SI
+	(plus:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r"))
+                 (lshiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+	)
+        (lshiftrt:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
+      )
+      (match_dup 3)
+    )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.addurn\t%0,%1,%2,%3"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_addnr"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+    (ashiftrt:SI
+      (plus:SI
+        (ashiftrt:SI (match_dup 0))
+        (ashiftrt:SI (match_operand:SI 1 "register_operand" "r"))
+      )
+      (match_operand:QI 2 "register_operand" "r")
+    )
+  )]
+  "TARGET_COREV_MAC"
+  "cv.addnr\t%0,%1,%2"
+  [(set_attr "type" "imul")
+   (set_attr "mode" "SI")]
+)
+
