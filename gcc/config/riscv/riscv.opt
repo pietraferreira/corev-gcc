@@ -138,6 +138,8 @@ Mask(COREV_HWLP)
 
 Mask(COREV_MAC)
 
+Mask(COREV_ALU)
+
 mriscv-attribute
 Target Report Var(riscv_emit_attribute_p) Init(-1)
 Emit RISC-V ELF attribute.
