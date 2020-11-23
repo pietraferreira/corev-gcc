@@ -655,10 +655,15 @@ riscv_parse_arch_string (const char *isa, int *flags, location_t loc)
   if (subset_list->lookup ("xcorevmac"))
     *flags |= MASK_COREV_MAC;
 
+  *flags &= ~MASK_COREV_ALU;
+  if (subset_list->lookup ("xcorevalu"))
+    *flags |= MASK_COREV_ALU;
+
   /* Generic CORE-V includes all other extensions */
   if (subset_list->lookup ("xcorev")){
     *flags |= MASK_COREV_HWLP;
     *flags |= MASK_COREV_MAC;
+    *flags |= MASK_COREV_ALU;
   }
   
   if (current_subset_list)
