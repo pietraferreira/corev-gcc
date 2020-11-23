@@ -549,7 +549,7 @@ UNSPECV_MACS_MACSRNF
   )]
   "TARGET_COREV_MAC"
   "cv.extbz\t%0,%1"
-  [(set_attr "type" "imul")
+  [(set_attr "type" "arith")
    (set_attr "mode" "SI")]
 )
 
@@ -557,15 +557,15 @@ UNSPECV_MACS_MACSRNF
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-        (ashiftrt:SI (match_operand:SI 1 "register_operand" "r"))
-        (ashiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+        (match_operand:SI 1 "register_operand" "r")
+        (match_operand:SI 2 "register_operand" "r")
       )
       (match_operand:SI 3 "immediate_operand" "i")
     )
   )]
   "TARGET_COREV_MAC"
   "cv.addn\t%0,%1,%2,%3"
-  [(set_attr "type" "imul")
+  [(set_attr "type" "arith")
    (set_attr "mode" "SI")]
 )
 
@@ -573,15 +573,15 @@ UNSPECV_MACS_MACSRNF
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-        (lshiftrt:SI (match_operand:SI 1 "register_operand" "r"))
-        (lshiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+        (match_operand:SI 1 "register_operand" "r")
+        (match_operand:SI 2 "register_operand" "r")
       )
       (match_operand:SI 3 "immediate_operand" "i")
     )
   )]
   "TARGET_COREV_MAC"
   "cv.addun\t%0,%1,%2,%3"
-  [(set_attr "type" "imul")
+  [(set_attr "type" "arith")
    (set_attr "mode" "SI")]
 )
 
@@ -589,8 +589,8 @@ UNSPECV_MACS_MACSRNF
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-	(plus:SI (ashiftrt:SI (match_operand:SI 1 "register_operand" "r"))
-	         (ashiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+	(plus:SI (match_operand:SI 1 "register_operand" "r")
+	         (match_operand:SI 2 "register_operand" "r")
 	)
 	(ashift:SI
           (const_int 1)
@@ -604,7 +604,7 @@ UNSPECV_MACS_MACSRNF
   )]
   "TARGET_COREV_MAC"
   "cv.addrn\t%0,%1,%2,%3"
-  [(set_attr "type" "imul")
+  [(set_attr "type" "arith")
    (set_attr "mode" "SI")]
 )
 
@@ -612,8 +612,8 @@ UNSPECV_MACS_MACSRNF
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(plus:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r"))
-                 (lshiftrt:SI (match_operand:SI 2 "register_operand" "r"))
+	(plus:SI (match_operand:SI 1 "register_operand" "r")
+                 (match_operand:SI 2 "register_operand" "r")
 	)
         (lshiftrt:SI
           (const_int 1)
@@ -627,7 +627,7 @@ UNSPECV_MACS_MACSRNF
   )]
   "TARGET_COREV_MAC"
   "cv.addurn\t%0,%1,%2,%3"
-  [(set_attr "type" "imul")
+  [(set_attr "type" "arith")
    (set_attr "mode" "SI")]
 )
 
@@ -635,15 +635,151 @@ UNSPECV_MACS_MACSRNF
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-        (ashiftrt:SI (match_dup 0))
-        (ashiftrt:SI (match_operand:SI 1 "register_operand" "r"))
+        (match_dup 0)
+        (match_operand:SI 1 "register_operand" "r")
       )
-      (match_operand:QI 2 "register_operand" "r")
+      (and:SI
+        (match_operand:QI 2 "register_operand" "r")
+          (const_int 31)
+      )
     )
   )]
   "TARGET_COREV_MAC"
   "cv.addnr\t%0,%1,%2"
-  [(set_attr "type" "imul")
+  [(set_attr "type" "arith")
    (set_attr "mode" "SI")]
 )
 
+; (define_insn "cv_clipu"
+;     [(set (match_operand:SI 0 "register_operand" "=r")
+;       (if_then_else:SI
+;         (le:SI (match_operand 1 "register_operand" "r")
+;                (const_int 0))
+;       (set (match_dup 0) (const_int 0))
+;         (if_then_else:SI
+;           (ge:SI (match_dup 1)
+;                  (ashift:SI
+;                    (const_int 1)
+;                    (minus:SI (match_operand 2 "immediate_operand" "i")
+;                                (const_int 1))))
+;           (minus:SI (const_int 1))          
+;         (set (match_dup 0)
+;              (ashift:SI
+;                (const_int 1)
+;                (minus:SI (match_operand 2 "immediate_operand" "i")
+;                            (const_int 1)))))
+;       )    
+;       (set (match_dup 0) (match_dup 1))     
+;   )]
+;   "TARGET_COREV_MAC"
+;   "cv.clipu\t%0,%1,%2"
+;   [(set_attr "type" "arith")
+;    (set_attr "mode" "SI")]
+; )
+
+; Following PULP's implementation
+
+(define_insn "cv_clip_maxmin"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+	(smax:SI (smin:SI (match_operand:SI 1 "register_operand" "r")
+			  (match_operand:SI 2 "immediate_operand" "i"))
+		 (match_operand:SI 3 "immediate_operand" "i"))
+  )]
+  "TARGET_COREV_MAC"
+  ; Note that here we use B2 
+  "cv.clip\t%0,%1,%B2"
+  [(set_attr "type" "logical")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_clip_minmax"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+	(smin:SI (smax:SI (match_operand:SI 1 "register_operand" "r")
+			  (match_operand:SI 2 "immediate_operand" "i"))
+		 (match_operand:SI 3 "immediate_operand" "i"))
+  )]
+  "TARGET_COREV_MAC"
+  "cv.clip\t%0,%1,%B3"
+  [(set_attr "type" "logical")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_clipr_minmax"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+	(smin:SI (smax:SI (match_operand:SI 1 "register_operand" "r")
+			  (neg:SI (plus:SI (match_operand:SI 2 "register_operand" "r") (const_int 1)))
+		 )
+		 (match_dup 2))
+  )]
+  "TARGET_COREV_MAC"
+  "cv.clipr\t%0,%1,%2"
+  [(set_attr "type" "logical")
+   (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_clipr_maxmin"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+	(smax:SI (smin:SI (match_operand:SI 1 "register_operand" "r")
+			  (match_operand:SI 2 "register_operand" "r")
+		 )
+		 (neg:SI (plus:SI (match_dup 2) (const_int 1))))
+  )]
+  "TARGET_COREV_MAC"
+  "cv.clipr\t%0,%1,%2"
+  [(set_attr "type" "logical")
+   (set_attr "mode" "SI")]
+)
+
+; Following PULP's implementation, cv.clipu's template is the same as clip, the only obvious difference being in the "TARGET..." line
+
+(define_insn "cv_clipu_maxmin"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (smax:SI (smin:SI (match_operand:SI 1 "register_operand" "r")
+                          (match_operand:SI 2 "immediate_operand" "i"))
+                 (match_operand:SI 3 "immediate_operand" "i"))
+  )]
+  "TARGET_COREV_MAC"
+  "cv.clipu\t%0,%1,%B2"
+[(set_attr "type" "logical")
+ (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_clipu_minmax"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (smin:SI (smax:SI (match_operand:SI 1 "register_operand" "r")
+                          (match_operand:SI 2 "immediate_operand" "i"))
+                 (match_operand:SI 3 "immediate_operand" "i"))
+  )]
+  "TARGET_COREV_MAC"
+  "cv.clipu\t%0,%1,%B3"
+[(set_attr "type" "logical")
+ (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_clipur_maxmin"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (smax:SI (smin:SI (match_operand:SI 1 "register_operand" "r")
+                          (match_operand:SI 2 "register_operand" "r")
+                 )
+                 (const_int 0)
+        )
+   )
+  ]
+  "TARGET_COREV_MAC"
+  "p.clipur\t%0,%1,%2"
+[(set_attr "type" "logical")
+ (set_attr "mode" "SI")]
+)
+
+(define_insn "cv_clipur_minmax"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+        (smin:SI (smax:SI (match_operand:SI 1 "register_operand" "r") (const_int 0))
+                 (match_operand:SI 2 "register_operand" "r")
+        )
+   )
+  ]
+  "TARGET_COREV_MAC"
+  "cv.clipur\t%0,%1,%2"
+[(set_attr "type" "logical")
+ (set_attr "mode" "SI")]
+)

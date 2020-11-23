@@ -28,4 +28,4 @@ DIRECT_COREV_BUILTIN(cv_addn,            addn,           RISCV_INT_FTYPE_INT_INT
 DIRECT_COREV_BUILTIN(cv_addun,           addun,          RISCV_INT_FTYPE_INT_INT_INT,                      corevmac)
 DIRECT_COREV_BUILTIN(cv_addrn,           addrn,          RISCV_INT_FTYPE_INT_INT_INT,                      corevmac)
 DIRECT_COREV_BUILTIN(cv_addurn,          addurn,         RISCV_INT_FTYPE_INT_INT_INT,                      corevmac)
-DIRECT_COREV_BUILTIN(cv_addnr,           addnr,          RISCV_INT_FTYPE_INT_INT_INT,                      corevmac)
+DIRECT_COREV_BUILTIN(cv_addnr,           addnr,          RISCV_INT_FTYPE_INT_INT_SHORT,                    corevmac)
