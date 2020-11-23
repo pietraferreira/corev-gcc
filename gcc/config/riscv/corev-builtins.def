@@ -21,7 +21,6 @@ DIRECT_COREV_BUILTIN(cv_machhun,         machhun,        RISCV_INT_FTYPE_INT_INT
 DIRECT_COREV_BUILTIN(cv_macurn,          macurn,         RISCV_INT_FTYPE_INT_SHORT_SHORT_SHORT,            corevmac)
 DIRECT_COREV_BUILTIN(cv_machhurn,        machhurn,       RISCV_INT_FTYPE_INT_INT_INT_SHORT,                corevmac)
 
-//TODO: Change from xcorevmac to xcorevalu
 DIRECT_COREV_BUILTIN(cv_abs,             abs,            RISCV_INT_FTYPE_INT,                          corevalu)
 DIRECT_COREV_BUILTIN(cv_slet,            slet,           RISCV_INT_FTYPE_INT_INT,                      corevalu)
 DIRECT_COREV_BUILTIN(cv_sletu,           sletu,          RISCV_INT_FTYPE_INT_INT,                      corevalu)
