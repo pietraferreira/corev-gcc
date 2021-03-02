@@ -61,12 +61,6 @@ riscv_cpu_cpp_builtins (cpp_reader *pfile)
       builtin_define ("__riscv_fdiv");
       builtin_define ("__riscv_fsqrt");
     }
-//TODO: dont think we need these
-  if (TARGET_COREV_HWLP)
-    builtin_define ("__riscv_corev_hwlp");
-  
-  if (TARGET_COREV_MAC)
-    builtin_define ("__riscv_corev_mac");
 
   switch (riscv_abi)
     {

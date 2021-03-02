@@ -134,8 +134,6 @@ Mask(RVC)
 
 Mask(RVE)
 
-Mask(COREV_HWLP)
-
 Mask(COREV_MAC)
 
 mriscv-attribute
