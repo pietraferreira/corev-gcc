@@ -3223,20 +3223,6 @@ riscv_block_move_loop (rtx dest, rtx src, HOST_WIDE_INT length,
     emit_insn(gen_nop ());
 }
 
-/* Move LENGTH bytes from SRC to DEST using a CORE-V hardware loop.  
-   LENGTH must be at least BYTES_PER_ITER.  Assume that
-   the memory regions do not overlap.  */
-//TODO: LOOK AT COMMENT REGION OVERLAP
-static void
-riscv_block_move_cv_hwlp (rtx dest, rtx src, rtx length)
-{
-  rtx src_reg, dest_reg, temp_reg;
-  riscv_adjust_block_mem (dest, INTVAL (GEN_INT(4)), &dest_reg, &dest);
-  riscv_adjust_block_mem (src,  INTVAL (GEN_INT(4)), &src_reg,  &src);
-  temp_reg = gen_reg_rtx(SImode);
-  emit_insn(gen_hwlp_memcpy(dest_reg, src_reg, temp_reg, length));
-}
-
 /* Expand a cpymemsi instruction, which copies LENGTH bytes from
    memory reference SRC to memory reference DEST.  */
 
@@ -3259,18 +3245,13 @@ riscv_expand_block_move (rtx dest, rtx src, rtx length)
 	  riscv_block_move_straight (dest, src, INTVAL (length));
 	  return true;
 	}
-      /* CORE-V specific */
-      else if (optimize && TARGET_COREV_HWLP)
-        {//TODO: LOOK INTO the point at which this is faster that move_loop as could be more expensive than conventional loops
-	  riscv_block_move_cv_hwlp(dest, src, length);
-	  return true;
-        }
       else if (optimize && align >= BITS_PER_WORD)
-      {
+	{
 	  unsigned min_iter_words
 	    = RISCV_MAX_MOVE_BYTES_PER_LOOP_ITER / UNITS_PER_WORD;
 	  unsigned iter_words = min_iter_words;
 	  HOST_WIDE_INT bytes = INTVAL (length), words = bytes / UNITS_PER_WORD;
+
 	  /* Lengthen the loop body if it shortens the tail.  */
 	  for (unsigned i = min_iter_words; i < min_iter_words * 2 - 1; i++)
 	    {

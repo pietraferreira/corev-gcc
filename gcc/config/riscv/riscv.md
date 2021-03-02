@@ -69,7 +69,6 @@
   ;; Stack Smash Protector
   UNSPEC_SSP_SET
   UNSPEC_SSP_TEST
-
 ])
 
 (define_constants

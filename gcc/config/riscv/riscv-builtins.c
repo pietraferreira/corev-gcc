@@ -93,15 +93,6 @@ struct riscv_builtin_description {
 AVAIL (hard_float, TARGET_HARD_FLOAT)
 
 static unsigned int
-riscv_builtin_avail_corevmac (void)
-{
-  if (TARGET_COREV_MAC)
-    return 1;
-
-  return 0;
-}
-
-static unsigned int
 riscv_builtin_avail_corevalu (void)
 {
   if (TARGET_COREV_ALU)
@@ -109,7 +100,6 @@ riscv_builtin_avail_corevalu (void)
 
   return 0;
 }
-
 
 /* Construct a riscv_builtin_description from the given arguments.
 
