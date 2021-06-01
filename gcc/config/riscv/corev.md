@@ -169,7 +169,7 @@
 
 (define_insn "cv_extbz"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (zero_extend:SI (match_operand:QI 1 "register_operand" "r"))
+        (zero_extend:SI (match_operand:QI 1 "register_operand" "r"))
   )]
   "TARGET_COREV_ALU"
   "cv.extbz\t%0,%1"
@@ -177,34 +177,155 @@
    (set_attr "mode" "SI")]
 )
 
-; Rough idea of what the template could look like
+; TODO: SOMEONE NEEDS TO CHECK THESE!!!
+
+; (define_insn "cv_clip"
+;if   [(if_then_else:SI                                                ; if
+;cond     (le:SI (match_operand 1 "register_operand" "r")              ; rs1 <= -2^(Is2-1)
+;                (neg:SI (ashift:SI
+;                           (const_int 1)
+;                           (minus:SI (match_operand 2 "immediate_operand" "i")
+;                                     (const_int 1)
+;                           )
+;                        )
+;                )
+;         )
+;then     (set (match_operand:SI 0 "register_operand" "=r")
+;              (neg:SI (ashift:SI
+;                         (const_int 1)
+;                         (minus:SI (match_dup 2)
+;                                     (const_int 1)
+;                         )
+;                      )
+;              )
+;         )                                                            ; then rD = -2^(Is2-1)
+;else if  (if_then_else:SI                                             ; else, if
+;cond        (ge:SI (match_dup 1)                                      ; rs1 >= 2^(ls2–1)-1
+;                   (minus:SI (ashift:SI
+;                                (const_int 1)
+;                                (minus:SI (match_dup 2)
+;                                          (const_int 1)
+;                                )
+;                             )
+;                             (const_int 1)
+;                   )
+;             )
+;then         (set (match_dup 0)                                       ; then rd = 2^(Is2-1)-1
+;                  (minus:SI (ashift:SI
+;                               (const_int 1)
+;                               (minus:SI (match_dup 2)
+;                                          (const_int 1)
+;                               )
+;                            )
+;                            (const_int 1)
+;                  )
+;             )
+;else         (set (match_dup 0) (match_dup 1))                         ; else rd = rs1
+;          )
+;     )]
+;   "TARGET_COREV_ALU"
+;   "cv.clip\t%0,%1,%2"
+;   [(set_attr "type" "arith")
+;    (set_attr "mode" "SI")]
+; )
+
+; (define_insn "cv_clipr"
+;if   [(if_then_else:SI                                                ; if
+;cond     (le:SI (match_operand 1 "register_operand" "r")              ; rs1 <= -2^(Is2-1)
+;                (neg:SI (ashift:SI
+;                           (const_int 1)
+;                           (minus:SI (match_operand 2 "immediate_operand" "i")
+;                                     (const_int 1)
+;                           )
+;                        )
+;                )
+;         )
+;then     (set (match_operand:SI 0 "register_operand" "=r")
+;              (neg:SI (ashift:SI
+;                         (const_int 1)
+;                         (minus:SI (match_dup 2)
+;                                     (const_int 1)
+;                         )
+;                      )
+;              )
+;         )                                                            ; then rD = -2^(Is2-1)
+;else if  (if_then_else:SI                                             ; else, if
+;cond        (ge:SI (match_dup 1)                                      ; rs1 >= rs2
+;                   (match_dup 2)
+;            )
+;then        (set (match_dup 0)                                       ; then rd = rs2
+;                 (match_dup 2)
+;            )
+;els         (set (match_dup 0) (match_dup 1))                         ; else rd = rs1
+;         )
+;    )]
+;   "TARGET_COREV_ALU"
+;   "cv.clipr\t%0,%1,%2"
+;   [(set_attr "type" "arith")
+;    (set_attr "mode" "SI")]
+; )
+
 
 ; (define_insn "cv_clipu"
-;     [(set (match_operand:SI 0 "register_operand" "=r")
-;       (if_then_else:SI
-;         (le:SI (match_operand 1 "register_operand" "r")
-;                (const_int 0))
-;       (set (match_dup 0) (const_int 0))
-;         (if_then_else:SI
-;           (ge:SI (match_dup 1)
-;                  (ashift:SI
-;                    (const_int 1)
-;                    (minus:SI (match_operand 2 "immediate_operand" "i")
-;                                (const_int 1))))
-;           (minus:SI (const_int 1))          
-;         (set (match_dup 0)
-;              (ashift:SI
-;                (const_int 1)
-;                (minus:SI (match_operand 2 "immediate_operand" "i")
-;                            (const_int 1)))))
-;       )    
-;       (set (match_dup 0) (match_dup 1))     
-;   )]
+;if   [(if_then_else:SI                                                ; if
+;cond     (le:SI (match_operand 1 "register_operand" "r")              ; rs1 <= 0
+;                (const_int 0)
+;         )
+;then     (set (match_operand:SI 0 "register_operand" "=r") 
+;              (const_int 0))                                          ; then rD = 0
+;else if  (if_then_else:SI                                             ; else, if
+;cond        (ge:SI (match_dup 1)                                      ; rs1 >= 2^(ls2–1)-1
+;                   (minus:SI (ashift:SI
+;                                (const_int 1)
+;                                (minus:SI (match_operand 2 "immediate_operand" "i")
+;                                          (const_int 1)
+;                                )
+;                             )
+;                             (const_int 1)
+;                   )  
+;             )          
+;then         (set (match_dup 0)                                       ; then rd = 2^(Is2-1)-1
+;                  (minus:SI (ashift:SI
+;                               (const_int 1)
+;                               (minus:SI (match_dup 2)
+;                                          (const_int 1)
+;                               )
+;                            )
+;                            (const_int 1)
+;                  )
+;             )    
+;else         (set (match_dup 0) (match_dup 1))                         ; else rd = rs1     
+;          )
+;     )]
 ;   "TARGET_COREV_ALU"
 ;   "cv.clipu\t%0,%1,%2"
 ;   [(set_attr "type" "arith")
 ;    (set_attr "mode" "SI")]
 ; )
+
+; (define_insn "cv_clipur"
+;if   [(if_then_else:SI                                                ; if
+;cond     (le:SI (match_operand 1 "register_operand" "r")              ; rs1 <= 0
+;                (const_int 0)
+;         )
+;then     (set (match_operand:SI 0 "register_operand" "=r") 
+;              (const_int 0))                                          ; then rD = 0
+;else if  (if_then_else:SI                                             ; else, if
+;cond        (ge:SI (match_dup 1)                                      ; rs1 >= rs2
+;                   (match_operand 2 "immediate_operand" "i")
+;            )
+;then        (set (match_dup 0)                                        ; then rd = rs2
+;                 (match_dup 2)
+;            )   
+;else        (set (match_dup 0) (match_dup 1))                         ; else rd = rs1
+;         )
+;      )]
+;   "TARGET_COREV_ALU"
+;   "cv.clipur\t%0,%1,%2"
+;   [(set_attr "type" "arith")
+;    (set_attr "mode" "SI")]
+; )
+
 
 ; Following PULP's implementation
 
