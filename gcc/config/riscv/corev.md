@@ -169,7 +169,7 @@
 
 (define_insn "cv_extbz"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (zero_extend:SI (match_operand:QI 1 "register_operand" "r"))
+        (zero_extend:SI (match_operand:QI 1 "register_operand" "r"))
   )]
   "TARGET_COREV_ALU"
   "cv.extbz\t%0,%1"
