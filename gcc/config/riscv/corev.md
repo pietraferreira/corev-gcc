@@ -31,12 +31,12 @@
 
 (define_insn "cv_abs"
     [(set (match_operand:SI 0 "register_operand" "=r")
-        (if_then_else:SI
-            (lt:SI (match_operand:SI 1 "register_operand" "r")
-                   (const_int 0))
-                (neg:SI (match_dup 1))
-            (match_dup 1)
-        )
+      (if_then_else:SI
+        (lt:SI (match_operand:SI 1 "register_operand" "r")
+               (const_int 0))
+        (neg:SI (match_dup 1))
+        (match_dup 1)
+      )
   )]
   "TARGET_COREV_ALU"
   "cv.abs\t%0,%1"
@@ -46,12 +46,12 @@
 
 (define_insn "cv_slet"
     [(set (match_operand:SI 0 "register_operand" "=r")
-        (if_then_else:SI
-            (le:SI (match_operand:SI 1 "register_operand" "r")
-                   (match_operand:SI 2 "register_operand" "r"))
-                (const_int 1)
-            (const_int 0)
-        )
+      (if_then_else:SI
+        (le:SI (match_operand:SI 1 "register_operand" "r")
+               (match_operand:SI 2 "register_operand" "r"))
+        (const_int 1)
+        (const_int 0)
+      )
   )]
   "TARGET_COREV_ALU"
   "cv.slet\t%0,%1,%2"
@@ -61,12 +61,12 @@
 
 (define_insn "cv_sletu" /*TODO: unsigned */
     [(set (match_operand:SI 0 "register_operand" "=r")
-        (if_then_else:SI
-            (le:SI (match_operand:SI 1 "register_operand" "r")
-                   (match_operand:SI 2 "register_operand" "r"))
-                (const_int 1)
-            (const_int 0)
-        )
+      (if_then_else:SI
+        (le:SI (match_operand:SI 1 "register_operand" "r")
+               (match_operand:SI 2 "register_operand" "r"))
+        (const_int 1)
+        (const_int 0)
+      )
   )]
   "TARGET_COREV_ALU"
   "cv.sletu\t%0,%1,%2"
@@ -76,12 +76,12 @@
 
 (define_insn "cv_min"
     [(set (match_operand:SI 0 "register_operand" "=r")
-        (if_then_else:SI
-            (lt:SI (match_operand:SI 1 "register_operand" "r")
-                   (match_operand:SI 2 "register_operand" "r"))
-                (match_dup 1)
-            (match_dup 2)
-        )
+      (if_then_else:SI
+        (lt:SI (match_operand:SI 1 "register_operand" "r")
+               (match_operand:SI 2 "register_operand" "r"))
+        (match_dup 1)
+        (match_dup 2)
+      )
   )]
   "TARGET_COREV_ALU"
   "cv.min\t%0,%1,%2"
@@ -91,12 +91,12 @@
 
 (define_insn "cv_minu" /*TODO: unsigned */
     [(set (match_operand:SI 0 "register_operand" "=r")
-        (if_then_else:SI
-            (lt:SI (match_operand:SI 1 "register_operand" "r")
-                   (match_operand:SI 2 "register_operand" "r"))
-                (match_dup 1)
-            (match_dup 2)
-        )
+      (if_then_else:SI
+        (lt:SI (match_operand:SI 1 "register_operand" "r")
+               (match_operand:SI 2 "register_operand" "r"))
+        (match_dup 1)
+        (match_dup 2)
+      )
   )]
   "TARGET_COREV_ALU"
   "cv.minu\t%0,%1,%2"
@@ -106,12 +106,12 @@
   
 (define_insn "cv_max"
     [(set (match_operand:SI 0 "register_operand" "=r")
-        (if_then_else:SI
-            (lt:SI (match_operand:SI 1 "register_operand" "r")
-                   (match_operand:SI 2 "register_operand" "r"))
-                (match_dup 2)
-            (match_dup 1)
-        )
+      (if_then_else:SI
+        (lt:SI (match_operand:SI 1 "register_operand" "r")
+               (match_operand:SI 2 "register_operand" "r"))
+        (match_dup 2)
+        (match_dup 1)
+      )
   )]
   "TARGET_COREV_ALU"
   "cv.max\t%0,%1,%2"
@@ -121,12 +121,12 @@
 
 (define_insn "cv_maxu" /*TODO: unsigned */
     [(set (match_operand:SI 0 "register_operand" "=r")
-        (if_then_else:SI
-            (lt:SI (match_operand:SI 1 "register_operand" "r")
-                   (match_operand:SI 2 "register_operand" "r"))
-                (match_dup 2)
-            (match_dup 1)
-        )
+      (if_then_else:SI
+        (lt:SI (match_operand:SI 1 "register_operand" "r")
+               (match_operand:SI 2 "register_operand" "r"))
+        (match_dup 2)
+        (match_dup 1)
+      )
   )]
   "TARGET_COREV_ALU"
   "cv.maxu\t%0,%1,%2"
@@ -136,8 +136,7 @@
 
 (define_insn "cv_exths"
     [(set (match_operand:SI 0 "register_operand" "=r")
-          (sign_extend:SI (match_operand:HI 1 "register_operand" "r")
-        )
+      (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
   )]
   "TARGET_COREV_ALU"
   "cv.exths\t%0,%1"
@@ -147,8 +146,7 @@
 
 (define_insn "cv_exthz"
     [(set (match_operand:SI 0 "register_operand" "=r")
-          (zero_extend:SI (match_operand:HI 1 "register_operand" "r")
-        )
+      (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
   )]
   "TARGET_COREV_ALU"
   "cv.exthz\t%0,%1"
@@ -158,8 +156,7 @@
 
 (define_insn "cv_extbs"
     [(set (match_operand:SI 0 "register_operand" "=r")
-          (sign_extend:SI (match_operand:QI 1 "register_operand" "r")
-        )
+      (sign_extend:SI (match_operand:QI 1 "register_operand" "r"))
   )]
   "TARGET_COREV_ALU"
   "cv.extbs\t%0,%1"
@@ -169,7 +166,7 @@
 
 (define_insn "cv_extbz"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (zero_extend:SI (match_operand:QI 1 "register_operand" "r"))
+    (zero_extend:SI (match_operand:QI 1 "register_operand" "r"))
   )]
   "TARGET_COREV_ALU"
   "cv.extbz\t%0,%1"
@@ -467,10 +464,10 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-	(plus:SI (match_operand:SI 1 "register_operand" "r")
-	         (match_operand:SI 2 "register_operand" "r")
-	)
-	(ashift:SI
+        (plus:SI (match_operand:SI 1 "register_operand" "r")
+                 (match_operand:SI 2 "register_operand" "r")
+        )
+        (ashift:SI
           (const_int 1)
           (minus:SI (match_operand:SI 3 "immediate_operand" "i")
                     (const_int 1)
@@ -490,10 +487,10 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(plus:SI (match_operand:SI 1 "register_operand" "r")
+        (plus:SI (match_operand:SI 1 "register_operand" "r")
                  (match_operand:SI 2 "register_operand" "r")
-	)
-        (lshiftrt:SI
+        )
+        (ashiftrt:SI
           (const_int 1)
           (minus:SI (match_operand:SI 3 "immediate_operand" "i")
                     (const_int 1)
@@ -518,7 +515,7 @@
       )
       (and:SI
         (match_operand:QI 2 "register_operand" "r")
-          (const_int 31)
+        (const_int 31)
       )
     )
   )]
@@ -530,17 +527,18 @@
 
 (define_insn "cv_addunr"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (lshiftrt:SI
-                (plus:SI
-                        (match_operand:SI 1 "register_operand" "r")
-                        (match_operand:SI 2 "register_operand" "r")
-                )
-                (and:SI
-			(match_operand:HI 3 "register_operand" "r") ;;TODO: why doesnt this like SI? DO I NEED A CHECK FOR %0 == %1
-			(const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-		)
-	)
-   )]
+    (lshiftrt:SI
+      (plus:SI
+        (match_operand:SI 1 "register_operand" "r"
+        (match_operand:SI 2 "register_operand" "r")
+      )
+      (and:SI
+        ;; TODO doesn't work with SI (applies to other insn)
+        (match_operand:HI 3 "register_operand" "r")
+        (const_int 31) 
+      )
+    )
+  )]
   "TARGET_COREV_ALU"
   "cv.addunr\t%0,%2,%3"
   [(set_attr "type" "arith")
@@ -549,28 +547,28 @@
 
 (define_insn "cv_addrnr"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (ashiftrt:SI
-		(plus:SI
-			(plus:SI
-				(match_operand:SI 1 "register_operand" "r")
-				(match_operand:SI 2 "register_operand" "r")
-			)
-			(ashift:SI
-				(const_int 1)
-				(minus:SI
-					(and:SI
-						(match_operand:HI 3 "register_operand" "r")
-						(const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-					)
-					(const_int 1)
-				)
-			)
-		)
-		(and:SI
-	                (match_dup 3)
-			(const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                )
-	)
+    (ashiftrt:SI
+      (plus:SI
+        (plus:SI
+          (match_operand:SI 1 "register_operand" "r")
+          (match_operand:SI 2 "register_operand" "r")
+        )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI
+            (and:SI
+              (match_operand:HI 3 "register_operand" "r")
+              (const_int 31)
+            )
+            (const_int 1)
+          )
+        )
+      )
+      (and:SI
+        (match_dup 3)
+        (const_int 31)
+      )
+    )
   )]
   "TARGET_COREV_ALU"
   "cv.addrnr\t%0,%2,%3"
@@ -580,30 +578,28 @@
 
 (define_insn "cv_addurnr"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (lshiftrt:SI
-                (plus:SI
-                        (plus:SI
-                                (match_operand:SI 1 "register_operand" "r")
-                                (match_operand:SI 2 "register_operand" "r")
-                        )
-                        (ashift:SI
-                                (const_int 1)
-                                (minus:SI
-                                        (and:SI
-                                                (match_operand:HI 3 "register_operand" "r")
-                                                (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                                        )
-                                        (const_int 1)
-                                )
-
-                        )
-                )
-                (and:SI
-                        (match_dup 3)
-                        (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                )
-
+    (lshiftrt:SI
+      (plus:SI
+        (plus:SI
+          (match_operand:SI 1 "register_operand" "r")
+          (match_operand:SI 2 "register_operand" "r")
         )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI
+            (and:SI
+              (match_operand:HI 3 "register_operand" "r")
+              (const_int 31)
+            )
+            (const_int 1)
+          )
+        )
+      )
+      (and:SI
+        (match_dup 3)
+        (const_int 31)
+      )
+    )
   )]
   "TARGET_COREV_ALU"
   "cv.addurnr\t%0,%2,%3"
@@ -613,14 +609,14 @@
 
 (define_insn "cv_subn"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (ashiftrt:SI
-                (minus:SI
-                        (match_operand:SI 1 "register_operand" "r")
-                        (match_operand:SI 2 "reg_or_0_operand" "rJ")
-                )
-                (match_operand:SI 3 "immediate_operand" "i")
-	)
-   )]
+    (ashiftrt:SI
+      (minus:SI
+        (match_operand:SI 1 "register_operand" "r")
+        (match_operand:SI 2 "reg_or_0_operand" "rJ")
+      )
+      (match_operand:SI 3 "immediate_operand" "i")
+    )
+  )]
   "TARGET_COREV_ALU"
   "cv.subn\t%0,%1,%2,%3"
   [(set_attr "type" "arith")
@@ -629,14 +625,14 @@
 
 (define_insn "cv_subun"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (lshiftrt:SI
-                (minus:SI
-                        (match_operand:SI 1 "register_operand" "r")
-                        (match_operand:SI 2 "reg_or_0_operand" "rJ")
-                )
-                (match_operand:SI 3 "immediate_operand" "i")
-        )
-   )]
+    (lshiftrt:SI
+      (minus:SI
+        (match_operand:SI 1 "register_operand" "r")
+        (match_operand:SI 2 "reg_or_0_operand" "rJ")
+      )
+      (match_operand:SI 3 "immediate_operand" "i")
+    )
+  )]
   "TARGET_COREV_ALU"
   "cv.subun\t%0,%1,%2,%3"
   [(set_attr "type" "arith")
@@ -645,23 +641,22 @@
 
 (define_insn "cv_subrn"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (ashiftrt:SI
-                (plus:SI
-                        (minus:SI
-                                (match_operand:SI 1 "register_operand" "r")
-                                (match_operand:SI 2 "register_operand" "r")
-                        )
-                        (ashift:SI
-                                (const_int 1)
-                                (minus:SI
-                                        (match_operand:HI 3 "immediate_operand" "i")
-                                        (const_int 1)
-                                )
-                        )
-                )
-                (match_dup 3)
-
+    (ashiftrt:SI
+      (plus:SI
+        (minus:SI
+          (match_operand:SI 1 "register_operand" "r")
+          (match_operand:SI 2 "register_operand" "r")
         )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI
+            (match_operand:HI 3 "immediate_operand" "i")
+            (const_int 1)
+          )
+        )
+      )
+      (match_dup 3)
+    )
   )]
   "TARGET_COREV_ALU"
   "cv.subrn\t%0,%1,%2,%3"
@@ -671,22 +666,22 @@
 
 (define_insn "cv_suburn"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (lshiftrt:SI
-                (plus:SI
-                        (minus:SI
-                                (match_operand:SI 1 "register_operand" "r")
-                                (match_operand:SI 2 "register_operand" "r")
-                        )
-                        (ashift:SI
-                                (const_int 1)
-                                (minus:SI
-                                        (match_operand:HI 3 "immediate_operand" "i")
-                                        (const_int 1)
-                                )
-                        )
-                )
-                (match_dup 3)
+    (lshiftrt:SI
+      (plus:SI
+        (minus:SI
+          (match_operand:SI 1 "register_operand" "r")
+          (match_operand:SI 2 "register_operand" "r")
         )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI
+            (match_operand:HI 3 "immediate_operand" "i")
+            (const_int 1)
+          )
+        )
+      )
+      (match_dup 3)
+    )
   )]
   "TARGET_COREV_ALU"
   "cv.suburn\t%0,%1,%2,%3"
@@ -696,17 +691,17 @@
 
 (define_insn "cv_subnr"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (ashiftrt:SI
-                (minus:SI
-                        (match_operand:SI 1 "register_operand" "r")
-                        (match_operand:SI 2 "register_operand" "r")
-                )
-                (and:SI
-                        (match_operand:HI 3 "register_operand" "r") ;;TODO: why doesnt this like SI? DO I NEED A CHECK FOR %0 == %1
-                        (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                )
-        )
-   )]
+    (ashiftrt:SI
+      (minus:SI
+        (match_operand:SI 1 "register_operand" "r")
+        (match_operand:SI 2 "register_operand" "r")
+      )
+      (and:SI
+        (match_operand:HI 3 "register_operand" "r")
+        (const_int 31)
+      )
+    )
+  )]
   "TARGET_COREV_ALU"
   "cv.subnr\t%0,%2,%3"
   [(set_attr "type" "arith")
@@ -715,17 +710,17 @@
 
 (define_insn "cv_subunr"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (lshiftrt:SI
-                (minus:SI
-                        (match_operand:SI 1 "register_operand" "r")
-                        (match_operand:SI 2 "register_operand" "r")
-                )
-                (and:SI
-                        (match_operand:HI 3 "register_operand" "r") ;;TODO: why doesnt this like SI? DO I NEED A CHECK FOR %0 == %1
-                        (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                )
-        )
-   )]
+    (lshiftrt:SI
+      (minus:SI
+        (match_operand:SI 1 "register_operand" "r")
+        (match_operand:SI 2 "register_operand" "r")
+      )
+      (and:SI
+        (match_operand:HI 3 "register_operand" "r")
+        (const_int 31)
+      )
+    )
+  )]
   "TARGET_COREV_ALU"
   "cv.subunr\t%0,%2,%3"
   [(set_attr "type" "arith")
@@ -734,28 +729,28 @@
 
 (define_insn "cv_subrnr"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (ashiftrt:SI
-                (plus:SI
-                        (minus:SI
-                                (match_operand:SI 1 "register_operand" "r")
-                                (match_operand:SI 2 "register_operand" "r")
-                        )
-                        (ashift:SI
-                                (const_int 1)
-                                (minus:SI
-                                        (and:SI
-                                                (match_operand:HI 3 "register_operand" "r")
-                                                (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                                        )
-                                        (const_int 1)
-                                )
-                        )
-                )
-                (and:SI
-                        (match_dup 3)
-                        (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                )
+    (ashiftrt:SI
+      (plus:SI
+        (minus:SI
+          (match_operand:SI 1 "register_operand" "r")
+          (match_operand:SI 2 "register_operand" "r")
         )
+        (ashift:SI
+          (const_int 1)
+            (minus:SI
+            (and:SI
+              (match_operand:HI 3 "register_operand" "r")
+              (const_int 31)
+            )
+            (const_int 1)
+          )
+        )
+      )
+      (and:SI
+        (match_dup 3)
+        (const_int 31)
+      )
+    )
   )]
   "TARGET_COREV_ALU"
   "cv.subrnr\t%0,%2,%3"
@@ -765,28 +760,28 @@
 
 (define_insn "cv_suburnr"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (lshiftrt:SI
-                (plus:SI
-                        (minus:SI
-                                (match_operand:SI 1 "register_operand" "r")
-                                (match_operand:SI 2 "register_operand" "r")
-                        )
-                        (ashift:SI
-                                (const_int 1)
-                                (minus:SI
-                                        (and:SI
-                                                (match_operand:HI 3 "register_operand" "r")
-                                                (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                                        )
-                                        (const_int 1)
-                                )
-                        )
-                )
-                (and:SI
-                        (match_dup 3)
-                        (const_int 31) ;;TODO: IS THIS CORRECT, cast to short and cut off top bits then and with 11111
-                )
+    (lshiftrt:SI
+      (plus:SI
+        (minus:SI
+          (match_operand:SI 1 "register_operand" "r")
+          (match_operand:SI 2 "register_operand" "r")
         )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI
+            (and:SI
+              (match_operand:HI 3 "register_operand" "r")
+              (const_int 31)
+            )
+            (const_int 1)
+          )
+        )
+      )
+      (and:SI
+        (match_dup 3)
+        (const_int 31)
+      )
+    )
   )]
   "TARGET_COREV_ALU"
   "cv.suburnr\t%0,%2,%3"
