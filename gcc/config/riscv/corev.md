@@ -31,10 +31,11 @@
 
 (define_insn "cv_mac"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (plus:SI (mult:SI (match_operand:SI 2 "register_operand" "r")
-		      (match_operand:SI 3 "register_operand" "r")
-	     )
-	     (match_operand:SI 1 "register_operand" "0")
+    (plus:SI 
+      (mult:SI (match_operand:SI 2 "register_operand" "r")
+               (match_operand:SI 3 "register_operand" "r")
+      )
+      (match_operand:SI 1 "register_operand" "0")
     )
   )]
   "TARGET_COREV_MAC"
@@ -45,10 +46,11 @@
 
 (define_insn "cv_msu"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (minus:SI (mult:SI (match_operand:SI 2 "register_operand" "r")
-		       (match_operand:SI 3 "register_operand" "r")
-	      )
-	      (match_operand:SI 1 "register_operand" "0")
+    (minus:SI 
+      (match_operand:SI 1 "register_operand" "0")
+      (mult:SI (match_operand:SI 2 "register_operand" "r")
+               (match_operand:SI 3 "register_operand" "r")
+      )
     )
   )]
   "TARGET_COREV_MAC"
@@ -61,7 +63,7 @@
 (define_insn "cv_muls"
   [(set (match_operand:SI 0 "register_operand" "=r")
     (mult: SI (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
-	      (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
+              (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
     )
   )]
   "TARGET_COREV_MAC"
@@ -72,12 +74,13 @@
 
 (define_insn "cv_mulhhs"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (mult:SI (sign_extend:SI (lshiftrt:SI
-			       (match_operand:SI 1 "register_operand" "r")
-			       (const_int 16)))
-	     (sign_extend:SI (lshiftrt:SI
-			       (match_operand:SI 2 "register_operand" "r")
-			       (const_int 16)))
+    (mult:SI 
+      (sign_extend:SI 
+        (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
+                     (const_int 16)))
+      (sign_extend:SI 
+        (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                     (const_int 16)))
     )
   )]
   "TARGET_COREV_MAC"
@@ -88,9 +91,10 @@
 
 (define_insn "cv_mulsn"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (lshiftrt:SI
-      (mult:SI (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
-	       (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
+    (ashiftrt:SI
+      (mult:SI 
+        (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
+        (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
       )
       (match_operand:SI 3 "immediate_operand" "i")
     )
@@ -103,13 +107,14 @@
 
 (define_insn "cv_mulhhsn"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (lshiftrt:SI
-      (mult:SI (sign_extend:SI (lshiftrt:SI
-			         (match_operand:SI 1 "register_operand" "r")
-				 (const_int 16)))
-	       (sign_extend:SI (lshiftrt:SI
-			         (match_operand:SI 2 "register_operand" "r")
-				 (const_int 16)))
+    (ashiftrt:SI
+      (mult:SI 
+        (sign_extend:SI 
+          (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
+                       (const_int 16)))
+        (sign_extend:SI 
+          (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                       (const_int 16)))
       )
       (match_operand:SI 3 "immediate_operand" "i")
     ) 
@@ -122,17 +127,18 @@
 
 (define_insn "cv_mulsrn"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (lshiftrt:SI
+    (ashiftrt:SI
       (plus:SI
-	(mult:SI (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
-		 (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
-	)
-	(ashift:SI
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 3 "immediate_operand" "i")
-		    (const_int 1)
-	  )
-	)
+        (mult:SI 
+          (sign_extend:SI (match_operand:HI 1 "register_operand" "r"))
+          (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
+        )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 3)
     )
@@ -147,17 +153,18 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-	(mult:SI (ashiftrt:SI (match_operand:SI 1 "register_operand" "r")
-			      (const_int 16))
-		 (ashiftrt:SI (match_operand:SI 2 "register_operand" "r")
-			      (const_int 16))
-	)
-	(ashift:SI
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 3 "immediate_operand" "i")
-		    (const_int 1)
-	  )
-	)
+        (mult:SI 
+          (ashiftrt:SI (match_operand:SI 1 "register_operand" "r")
+                       (const_int 16))
+          (ashiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                       (const_int 16))
+        )
+        (ashift:SI 
+          (const_int 1)
+          (minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 3)
     )
@@ -171,7 +178,7 @@
 (define_insn "cv_mulu"
   [(set (match_operand:SI 0 "register_operand" "=r")
     (mult: SI (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
-	      (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
+              (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
     )
   )]
   "TARGET_COREV_MAC"
@@ -182,10 +189,11 @@
 
 (define_insn "cv_mulhhu"
   [(set (match_operand:SI 0 "register_operand" "=r")
-    (mult:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
-			  (const_int 16))
-	     (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
-			  (const_int 16))
+    (mult:SI 
+      (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
+                   (const_int 16))
+      (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                   (const_int 16))
     )
   )]
   "TARGET_COREV_MAC"
@@ -197,8 +205,9 @@
 (define_insn "cv_mulun"
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
-      (mult:SI (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
-	       (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
+      (mult:SI 
+        (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
+        (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
       )
       (match_operand:SI 3 "immediate_operand" "i")
     )
@@ -212,10 +221,11 @@
 (define_insn "cv_mulhhun"
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
-      (mult:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
-			    (const_int 16))
-	       (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
-			    (const_int 16))
+      (mult:SI 
+        (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
+                     (const_int 16))
+        (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                     (const_int 16))
       )
       (match_operand:SI 3 "immediate_operand" "i")
     )
@@ -230,15 +240,16 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(mult:SI (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
-		 (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
-	)
-	(ashift:SI
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 3 "immediate_operand" "i")
-		    (const_int 1)
-	  )
-	)
+        (mult:SI 
+          (zero_extend:SI (match_operand:HI 1 "register_operand" "r"))
+          (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
+        )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 3)
     )	
@@ -253,17 +264,18 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(mult:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
-			      (const_int 16))
-		 (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
-			      (const_int 16))
-	)
-	(ashift:SI
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 3 "immediate_operand" "i")
-		    (const_int 1)
-	  )
-	)
+        (mult:SI 
+          (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
+                       (const_int 16))
+          (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                       (const_int 16))
+        )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 3 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 3)
     )
@@ -278,10 +290,11 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-	(mult:SI (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
-		 (sign_extend:SI (match_operand:HI 3 "register_operand" "r"))
-	)
-	(match_operand:SI 1 "register_operand" "0")
+        (mult:SI 
+          (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
+          (sign_extend:SI (match_operand:HI 3 "register_operand" "r"))
+        )
+        (match_operand:SI 1 "register_operand" "0")
       )
       (match_operand:SI 4 "five_bit_sleu_operand" "i")
     )
@@ -296,12 +309,12 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-	(mult:SI (ashiftrt:SI (match_operand:SI 2 "register_operand" "r")
-			      (const_int 16))
-		 (ashiftrt:SI (match_operand:SI 3 "register_operand" "r")
-			      (const_int 16))
-	)
-	(match_operand:SI 1 "register_operand" "0")
+        (mult:SI (ashiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                              (const_int 16))
+                 (ashiftrt:SI (match_operand:SI 3 "register_operand" "r")
+                              (const_int 16))
+        )
+        (match_operand:SI 1 "register_operand" "0")
       )
       (match_operand:SI 4 "five_bit_sleu_operand" "i")
     )
@@ -316,18 +329,19 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-	(plus:SI
-	  (mult:SI (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
-		   (sign_extend:SI (match_operand:HI 3 "register_operand" "r"))
-	  )
-	  (match_operand:SI 1 "register_operand" "0")
-	)
-	(ashift:SI 
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 4 "immediate_operand" "i") 
-		    (const_int 1)
-	  )
-	)
+        (plus:SI
+          (mult:SI 
+            (sign_extend:SI (match_operand:HI 2 "register_operand" "r"))
+            (sign_extend:SI (match_operand:HI 3 "register_operand" "r"))
+          )
+          (match_operand:SI 1 "register_operand" "0")
+        )
+        (ashift:SI 
+          (const_int 1)
+          (minus:SI (match_operand:SI 4 "immediate_operand" "i") 
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 4)
     )
@@ -342,20 +356,20 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (ashiftrt:SI
       (plus:SI
-	(plus:SI
-	  (mult:SI (ashiftrt:SI (match_operand:SI 2 "register_operand" "r")
-				(const_int 16))
-		   (ashiftrt:SI (match_operand:SI 3 "register_operand" "r")
-				(const_int 16))
-	  )
-	  (match_operand:SI 1 "register_operand" "0")
-	)
-	(ashift:SI
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 4 "immediate_operand" "i")
-		    (const_int 1)
-	  )
-	)
+        (plus:SI
+          (mult:SI (ashiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                                (const_int 16))
+                   (ashiftrt:SI (match_operand:SI 3 "register_operand" "r")
+                                (const_int 16))
+          )
+          (match_operand:SI 1 "register_operand "0")
+        )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 4 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 4)
     )
@@ -370,10 +384,10 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(mult:SI (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
-		 (zero_extend:SI (match_operand:HI 3 "register_operand" "r"))
-	)
-	(match_operand:SI 1 "register_operand" "0")
+        (mult:SI (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
+                 (zero_extend:SI (match_operand:HI 3 "register_operand" "r"))
+        )
+        (match_operand:SI 1 "register_operand" "0")
       )
       (match_operand:SI 4 "immediate_operand" "i")
     )
@@ -388,12 +402,12 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(mult:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
-			      (const_int 16))
-		 (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
-			      (const_int 16))
-	)
-	(match_operand:SI 3 "register_operand" "0")
+        (mult:SI (lshiftrt:SI (match_operand:SI 1 "register_operand" "r")
+                              (const_int 16))
+                 (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                              (const_int 16))
+        )
+        (match_operand:SI 3 "register_operand" "0")
       )
       (match_operand:SI 4 "immediate_operand" "i")
     )
@@ -408,18 +422,19 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(plus:SI
-	  (mult:SI (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
-		   (zero_extend:SI (match_operand:HI 3 "register_operand" "r"))
-	  )
-	  (match_operand:SI 1 "register_operand" "0")
-	)
-	(ashift:SI
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 4 "immediate_operand" "i")
-		    (const_int 1)
-	  )
-	)
+        (plus:SI
+          (mult:SI 
+            (zero_extend:SI (match_operand:HI 2 "register_operand" "r"))
+            (zero_extend:SI (match_operand:HI 3 "register_operand" "r"))
+          )
+          (match_operand:SI 1 "register_operand" "0")
+        )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 4 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 4)  
     )
@@ -434,20 +449,20 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
     (lshiftrt:SI
       (plus:SI
-	(plus:SI
-	  (mult:SI (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
-				(const_int 16))
-		   (lshiftrt:SI (match_operand:SI 3 "register_operand" "r")
-				(const_int 16))
-	  )
-	  (match_operand:SI 1 "register_operand" "0")
-	)
-	(ashift:SI
-	  (const_int 1)
-	  (minus:SI (match_operand:SI 4 "immediate_operand" "i")
-		    (const_int 1)
-	  )
-	)
+        (plus:SI
+          (mult:SI (lshiftrt:SI (match_operand:SI 2 "register_operand" "r")
+                                (const_int 16))
+                   (lshiftrt:SI (match_operand:SI 3 "register_operand" "r")
+                                (const_int 16))
+          )
+          (match_operand:SI 1 "register_operand" "0")
+        )
+        (ashift:SI
+          (const_int 1)
+          (minus:SI (match_operand:SI 4 "immediate_operand" "i")
+                    (const_int 1)
+          )
+        )
       )
       (match_dup 4)
     )
@@ -457,4 +472,3 @@
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
-
