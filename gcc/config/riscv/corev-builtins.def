@@ -10,7 +10,10 @@ DIRECT_COREV_BUILTIN(cv_exthz,           exthz,          RISCV_INT_FTYPE_SHORT, 
 DIRECT_COREV_BUILTIN(cv_extbs,           extbs,          RISCV_INT_FTYPE_SHORT,                        corevalu)
 DIRECT_COREV_BUILTIN(cv_extbz,           extbz,          RISCV_INT_FTYPE_SHORT,                        corevalu)
 
-// TODO: clip instructions would go here
+DIRECT_COREV_BUILTIN(cv_clip,            clip,           RISCV_INT_FTYPE_INT_INT_INT,                  corevalu)
+DIRECT_COREV_BUILTIN(cv_clipr,           clipr,          RISCV_INT_FTYPE_INT_INT_INT,                  corevalu)
+DIRECT_COREV_BUILTIN(cv_clipu,           clipu,          RISCV_INT_FTYPE_INT_INT_INT,                  corevalu)
+DIRECT_COREV_BUILTIN(cv_clipur,          clipur,         RISCV_INT_FTYPE_INT_INT_INT,                  corevalu)
 
 DIRECT_COREV_BUILTIN(cv_addn,            addn,           RISCV_INT_FTYPE_INT_INT_INT,                  corevalu)
 DIRECT_COREV_BUILTIN(cv_addun,           addun,          RISCV_INT_FTYPE_INT_INT_INT,                  corevalu)
