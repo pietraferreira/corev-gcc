@@ -1,5 +1,5 @@
 /* Definition of RISC-V target for GNU compiler.
-   Copyright (C) 2016-2022 Free Software Foundation, Inc.
+   Copyright (C) 2016-2023 Free Software Foundation, Inc.
    Contributed by Andrew Waterman (andrew@sifive.com).
 
 This file is part of GCC.
@@ -73,6 +73,9 @@ enum stack_protector_guard {
 #define TARGET_ZICSR    ((riscv_zi_subext & MASK_ZICSR) != 0)
 #define TARGET_ZIFENCEI ((riscv_zi_subext & MASK_ZIFENCEI) != 0)
 
+#define MASK_ZAWRS   (1 << 0)
+#define TARGET_ZAWRS ((riscv_za_subext & MASK_ZAWRS) != 0)
+
 #define MASK_ZBA      (1 << 0)
 #define MASK_ZBB      (1 << 1)
 #define MASK_ZBC      (1 << 2)
@@ -82,6 +85,16 @@ enum stack_protector_guard {
 #define TARGET_ZBB    ((riscv_zb_subext & MASK_ZBB) != 0)
 #define TARGET_ZBC    ((riscv_zb_subext & MASK_ZBC) != 0)
 #define TARGET_ZBS    ((riscv_zb_subext & MASK_ZBS) != 0)
+
+#define MASK_ZFINX      (1 << 0)
+#define MASK_ZDINX      (1 << 1)
+#define MASK_ZHINX      (1 << 2)
+#define MASK_ZHINXMIN   (1 << 3)
+
+#define TARGET_ZFINX    ((riscv_zinx_subext & MASK_ZFINX) != 0)
+#define TARGET_ZDINX    ((riscv_zinx_subext & MASK_ZDINX) != 0)
+#define TARGET_ZHINX    ((riscv_zinx_subext & MASK_ZHINX) != 0)
+#define TARGET_ZHINXMIN ((riscv_zinx_subext & MASK_ZHINXMIN) != 0)
 
 #define MASK_ZBKB     (1 << 0)
 #define MASK_ZBKC     (1 << 1)
@@ -145,6 +158,45 @@ enum stack_protector_guard {
 #define TARGET_ZVL32768B ((riscv_zvl_flags & MASK_ZVL32768B) != 0)
 #define TARGET_ZVL65536B ((riscv_zvl_flags & MASK_ZVL65536B) != 0)
 
+#define MASK_ZICBOZ   (1 << 0)
+#define MASK_ZICBOM   (1 << 1)
+#define MASK_ZICBOP   (1 << 2)
+
+#define TARGET_ZICBOZ ((riscv_zicmo_subext & MASK_ZICBOZ) != 0)
+#define TARGET_ZICBOM ((riscv_zicmo_subext & MASK_ZICBOM) != 0)
+#define TARGET_ZICBOP ((riscv_zicmo_subext & MASK_ZICBOP) != 0)
+
+#define MASK_ZFHMIN   (1 << 0)
+#define MASK_ZFH      (1 << 1)
+
+#define TARGET_ZFHMIN ((riscv_zf_subext & MASK_ZFHMIN) != 0)
+#define TARGET_ZFH    ((riscv_zf_subext & MASK_ZFH) != 0)
+
+#define MASK_ZMMUL      (1 << 0)
+#define TARGET_ZMMUL    ((riscv_zm_subext & MASK_ZMMUL) != 0)
+
+#define MASK_ZCA      (1 << 0)
+#define MASK_ZCB      (1 << 1)
+#define MASK_ZCE      (1 << 2)
+#define MASK_ZCF      (1 << 3)
+#define MASK_ZCD      (1 << 4)
+#define MASK_ZCMP     (1 << 5)
+#define MASK_ZCMT     (1 << 6)
+
+#define TARGET_ZCA    ((riscv_zc_subext & MASK_ZCA) != 0)
+#define TARGET_ZCB    ((riscv_zc_subext & MASK_ZCB) != 0)
+#define TARGET_ZCE    ((riscv_zc_subext & MASK_ZCE) != 0)
+#define TARGET_ZCF    ((riscv_zc_subext & MASK_ZCF) != 0)
+#define TARGET_ZCD    ((riscv_zc_subext & MASK_ZCD) != 0)
+#define TARGET_ZCMP   ((riscv_zc_subext & MASK_ZCMP) != 0)
+#define TARGET_ZCMT   ((riscv_zc_subext & MASK_ZCMT) != 0)
+
+#define MASK_SVINVAL (1 << 0)
+#define MASK_SVNAPOT (1 << 1)
+
+#define TARGET_SVINVAL ((riscv_sv_subext & MASK_SVINVAL) != 0)
+#define TARGET_SVNAPOT ((riscv_sv_subext & MASK_SVNAPOT) != 0)
+
 /* Bit of riscv_zvl_flags will set contintuly, N-1 bit will set if N-bit is
    set, e.g. MASK_ZVL64B has set then MASK_ZVL32B is set, so we can use
    popcount to caclulate the minimal VLEN.  */
@@ -152,5 +204,22 @@ enum stack_protector_guard {
   ((riscv_zvl_flags == 0) \
    ? 0 \
    : 32 << (__builtin_popcount (riscv_zvl_flags) - 1))
+
+
+#define MASK_XCVELW             (1 <<  0)
+#define MASK_XCVMAC             (1 <<  1)
+#define MASK_XCVBITMANIP        (1 <<  2)
+#define MASK_XCVSIMD            (1 <<  3)
+#define MASK_XCVALU             (1 <<  4)
+#define MASK_XCVBI              (1 <<  5)
+#define MASK_XCVMEM             (1 <<  6)
+
+#define TARGET_XCVELW           ((riscv_xcv_flags & MASK_XCVELW) != 0)
+#define TARGET_XCVMAC           ((riscv_xcv_flags & MASK_XCVMAC) != 0)
+#define TARGET_XCVBITMANIP      ((riscv_xcv_flags & MASK_XCVBITMANIP) != 0)
+#define TARGET_XCVSIMD          ((riscv_xcv_flags & MASK_XCVSIMD) != 0)
+#define TARGET_XCVALU           ((riscv_xcv_flags & MASK_XCVALU) != 0)
+#define TARGET_XCVBI            ((riscv_xcv_flags & MASK_XCVBI) != 0)
+#define TARGET_XCVMEM           ((riscv_xcv_flags & MASK_XCVMEM) != 0)
 
 #endif /* ! GCC_RISCV_OPTS_H */
